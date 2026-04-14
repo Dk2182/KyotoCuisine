@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyoto Cuisine Menu</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f1ee;
+            color: #2f2a28;
+        }
+
+        .serif {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .topbar {
+            background: #fbfaf8;
+            border-bottom: 1px solid #e4ddd7;
+            padding: 18px 28px;
+        }
+
+        .topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #cf544c;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .brand-icon::after {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            margin-top: 4px;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #8f8882;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .cart-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: #cf544c;
+            color: #fff;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .role-btn {
+            border: 1px solid #d8d0ca;
+            background: #fff;
+            color: #433d39;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .hero {
+            background: #fbfaf8;
+            border-bottom: 1px solid #e7dfd9;
+            text-align: center;
+            padding: 54px 20px 34px;
+        }
+
+        .hero h1 {
+            font-size: 58px;
+            color: #332d2a;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #8a847e;
+            font-size: 16px;
+            margin-bottom: 28px;
+        }
+
+        .search-wrap {
+            max-width: 430px;
+            margin: 0 auto;
+            background: #f0ece8;
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            color: #4d4743;
+        }
+
+        .search-wrap input::placeholder {
+            color: #9a938d;
+        }
+
+        .filters {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: none;
+            background: transparent;
+            color: #47413d;
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #cf544c;
+            color: white;
+        }
+
+        .menu-section {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 36px 20px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: #fbfaf8;
+            border: 1px solid #ded5ce;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .card-image-wrap {
+            position: relative;
+            height: 190px;
+            overflow: hidden;
+        }
+
+        .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d9b228;
+            color: #473a08;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 14px;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            line-height: 1.2;
+        }
+
+        .price {
+            color: #cf544c;
+            font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
+        }
+
+        .description {
+            margin-top: 10px;
+            color: #8c857f;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 62px;
+        }
+
+        .add-btn {
+            margin-top: 14px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            background: #cf544c;
+            color: #fff;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .add-btn:hover,
+        .role-btn:hover,
+        .filter-btn:hover,
+        .cart-action-btn:hover,
+        .checkout-btn:hover,
+        .close-cart:hover,
+        .remove-btn:hover {
+            opacity: 0.92;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(37, 29, 25, 0.18);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s ease;
+            z-index: 30;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 370px;
+            max-width: 100%;
+            height: 100vh;
+            background: #fbfaf8;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08);
+            transform: translateX(100%);
+            transition: transform 0.28s ease;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e4ddd7;
+        }
+
+        .cart-drawer.open {
+            transform: translateX(0);
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid #ece2db;
+        }
+
+        .cart-header-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .cart-header-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #f8e2df;
+            color: #cf544c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .cart-title {
+            font-size: 18px;
+            color: #332d2a;
+            line-height: 1.1;
+        }
+
+        .cart-subtitle {
+            margin-top: 4px;
+            color: #9a938d;
+            font-size: 13px;
+        }
+
+        .close-cart {
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            color: #5f5854;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .cart-empty {
+            color: #8c857f;
+            text-align: center;
+            padding: 40px 12px;
+            font-size: 14px;
+        }
+
+        .cart-item {
+            border: 1px solid #e3d9d2;
+            background: #fffdfb;
+            border-radius: 16px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 58px 1fr auto;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 14px;
+        }
+
+        .cart-item img {
+            width: 58px;
+            height: 58px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .cart-item-name {
+            font-size: 16px;
+            color: #332d2a;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            font-size: 14px;
+            color: #cf544c;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            border: 1px solid #e3d9d2;
+            background: #faf5f1;
+            color: #4b4541;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-item-qty {
+            min-width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .cart-item-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 18px;
+            min-height: 58px;
+        }
+
+        .remove-btn {
+            border: none;
+            background: transparent;
+            color: #cf544c;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cart-item-total {
+            font-size: 16px;
+            font-weight: 700;
+            color: #332d2a;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #e4ddd7;
+            background: #fbfaf8;
+            padding: 18px 16px 14px;
+        }
+
+        .summary-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #4a4440;
+        }
+
+        .summary-row.total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e7ddd6;
+            font-weight: 700;
+            font-size: 18px;
+            color: #332d2a;
+        }
+
+        .summary-row.total span:last-child {
+            color: #cf544c;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            background: #cf544c;
+            color: #fff;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+            box-shadow: 0 8px 18px rgba(207, 84, 76, 0.18);
+        }
+
+        @media (max-width: 1100px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 820px) {
+            .hero h1 {
+                font-size: 44px;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .topbar-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-drawer {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="brand-icon"></div>
+                <div>
+                    <div class="brand-name">Kyoto Cuisine</div>
+                    <div class="brand-subtitle">Japanese Restaurant</div>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="role-btn">Switch Role</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 class="serif">Our Menu</h1>
+        <p>Experience the authentic flavors of Japan, crafted with care and tradition</p>
+
+        <div class="search-wrap">
+            <span>🔍</span>
+            <input id="searchInput" type="text" placeholder="Search menu items..." />
+        </div>
+
+        <div class="filters" id="filters"></div>
+    </section>
+
+    <main class="menu-section">
+        <div class="menu-grid" id="menuGrid"></div>
+    </main>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <div class="cart-header-left">
+                <div class="cart-header-icon">👜</div>
+                <div>
+                    <div class="cart-title serif">Your Cart</div>
+                    <div class="cart-subtitle" id="cartItemCountLabel">0 items</div>
+                </div>
+            </div>
+            <button class="close-cart" id="closeCartBtn" aria-label="Close cart">×</button>
+        </div>
+
+        <div class="cart-body" id="cartItemsContainer"></div>
+
+        <div class="cart-footer">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="subtotalValue">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax (10%)</span>
+                <span id="taxValue">$0.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="totalValue">$0.00</span>
+            </div>
+            <button class="checkout-btn">Continue to Checkout</button>
+        </div>
+    </aside>
+
+    <script>
+        const categories = ["All", "Sushi", "Drinks", "Desserts"];
+
+        const menuItems = [
+            {
+                id: 1,
+                name: "Salmon Nigiri",
+                price: 8.99,
+                category: "Sushi",
+                description: "Fresh Norwegian salmon on seasoned rice, finished with a delicate touch.",
+                image: "../assets/salmon_nigiri.jpg",
+                badge: "Bestseller"
+            },
+            {
+                id: 2,
+                name: "Dragon Roll",
+                price: 16.99,
+                category: "Sushi",
+                description: "Shrimp tempura, avocado, topped with eel and a special house drizzle.",
+                image: "../assets/dragon_roll.jpg",
+                badge: "Bestseller"
+            },
+            {
+                id: 3,
+                name: "Tuna Sashimi",
+                price: 18.99,
+                category: "Sushi",
+                description: "Premium bluefin tuna, thinly sliced with soy sauce and wasabi.",
+                image: "../assets/tuna_sashimi.jpg"
+            },
+            {
+                id: 4,
+                name: "California Roll",
+                price: 12.99,
+                category: "Sushi",
+                description: "Classic roll with crab, avocado, and cucumber, perfectly balanced.",
+                image: "../assets/california_roll.jpg"
+            },
+            {
+                id: 5,
+                name: "Sake",
+                price: 9.99,
+                category: "Drinks",
+                description: "Traditional Japanese rice wine, served warm or chilled.",
+                image: "../assets/sake.jpg"
+            },
+            {
+                id: 6,
+                name: "Green Tea",
+                price: 4.99,
+                category: "Drinks",
+                description: "Premium matcha green tea from Kyoto region.",
+                image: "../assets/greentea.jpg",
+                badge: "Bestseller"
+            },
+            {
+                id: 7,
+                name: "Mochi Ice Cream",
+                price: 7.99,
+                category: "Desserts",
+                description: "Soft rice cake filled with green tea ice cream.",
+                image: "../assets/icecream.jpg"
+            },
+            {
+                id: 8,
+                name: "Dorayaki",
+                price: 6.99,
+                category: "Desserts",
+                description: "Sweet red bean pancake sandwich, lightly sweetened.",
+                image: "../assets/dorayaki.jpg"
+            }
+        ];
+
+        let activeCategory = "All";
+        let searchText = "";
+        let cart = [];
+
+        const TAX_RATE = 0.10;
+
+        const filtersEl = document.getElementById("filters");
+        const menuGridEl = document.getElementById("menuGrid");
+        const searchInputEl = document.getElementById("searchInput");
+        const cartBtnEl = document.getElementById("cartBtn");
+        const cartCountEl = document.getElementById("cartCount");
+        const cartDrawerEl = document.getElementById("cartDrawer");
+        const overlayEl = document.getElementById("overlay");
+        const closeCartBtnEl = document.getElementById("closeCartBtn");
+        const cartItemsContainerEl = document.getElementById("cartItemsContainer");
+        const cartItemCountLabelEl = document.getElementById("cartItemCountLabel");
+        const subtotalValueEl = document.getElementById("subtotalValue");
+        const taxValueEl = document.getElementById("taxValue");
+        const totalValueEl = document.getElementById("totalValue");
+
+        function formatPrice(value) {
+            return `$${value.toFixed(2)}`;
+        }
+
+        function openCart() {
+            cartDrawerEl.classList.add("open");
+            overlayEl.classList.add("show");
+        }
+
+        function closeCart() {
+            cartDrawerEl.classList.remove("open");
+            overlayEl.classList.remove("show");
+        }
+
+        function getTotalCartItems() {
+            return cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function addToCart(itemId) {
+            const existingItem = cart.find((item) => item.id === itemId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                const menuItem = menuItems.find((item) => item.id === itemId);
+                cart.push({ ...menuItem, quantity: 1 });
+            }
+
+            renderCart();
+            openCart();
+        }
+
+        function changeQuantity(itemId, change) {
+            cart = cart
+                .map((item) => {
+                    if (item.id === itemId) {
+                        return { ...item, quantity: item.quantity + change };
+                    }
+                    return item;
+                })
+                .filter((item) => item.quantity > 0);
+
+            renderCart();
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter((item) => item.id !== itemId);
+            renderCart();
+        }
+
+        function renderFilters() {
+            filtersEl.innerHTML = "";
+
+            categories.forEach((category) => {
+                const button = document.createElement("button");
+                button.className = "filter-btn" + (category === activeCategory ? " active" : "");
+                button.textContent = category;
+                button.addEventListener("click", () => {
+                    activeCategory = category;
+                    renderFilters();
+                    renderMenu();
+                });
+                filtersEl.appendChild(button);
+            });
+        }
+
+        function renderMenu() {
+            const filteredItems = menuItems.filter((item) => {
+                const matchesCategory = activeCategory === "All" || item.category === activeCategory;
+                const matchesSearch = item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                    item.description.toLowerCase().includes(searchText.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            menuGridEl.innerHTML = filteredItems
+                .map((item) => {
+                    return `
+                        <div class="card">
+                            <div class="card-image-wrap">
+                                <img src="${item.image}" alt="${item.name}" />
+                                ${item.badge ? `<span class="badge">${item.badge}</span>` : ""}
+                            </div>
+                            <div class="card-body">
+                                <div class="card-top">
+                                    <div class="card-title serif">${item.name}</div>
+                                    <div class="price">${formatPrice(item.price)}</div>
+                                </div>
+                                <div class="description">${item.description}</div>
+                                <button class="add-btn" onclick="addToCart(${item.id})">+ Add to Cart</button>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join("");
+        }
+
+        function renderCart() {
+            const totalItems = getTotalCartItems();
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + tax;
+
+            cartCountEl.textContent = totalItems;
+            cartItemCountLabelEl.textContent = `${totalItems} ${totalItems === 1 ? "item" : "items"}`;
+            subtotalValueEl.textContent = formatPrice(subtotal);
+            taxValueEl.textContent = formatPrice(tax);
+            totalValueEl.textContent = formatPrice(total);
+
+            if (cart.length === 0) {
+                cartItemsContainerEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+                return;
+            }
+
+            cartItemsContainerEl.innerHTML = cart
+                .map((item) => {
+                    const lineTotal = item.price * item.quantity;
+                    return `
+                        <div class="cart-item">
+                            <img src="${item.image}" alt="${item.name}" />
+                            <div>
+                                <div class="cart-item-name serif">${item.name}</div>
+                                <div class="cart-item-price">${formatPrice(item.price)}</div>
+                                <div class="cart-item-controls">
+                                    <button class="cart-action-btn" onclick="changeQuantity(${item.id}, -1)">−</button>
+                                    <div class="cart-item-qty">${item.quantity}</div>
+                                    <button class="cart-action-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-right">
+                                <button class="remove-btn" onclick="removeFromCart(${item.id})" aria-label="Remove item">🗑</button>
+                                <div class="cart-item-total">${formatPrice(lineTotal)}</div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join("");
+        }
+
+        searchInputEl.addEventListener("input", (event) => {
+            searchText = event.target.value;
+            renderMenu();
+        });
+
+        cartBtnEl.addEventListener("click", openCart);
+        closeCartBtnEl.addEventListener("click", closeCart);
+        overlayEl.addEventListener("click", closeCart);
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closeCart();
+            }
+        });
+
+        renderFilters();
+        renderMenu();
+        renderCart();
+    </script>
+</body>
+
+</html>
