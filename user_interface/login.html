@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyoto Cuisine Auth</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f4f1;
+            color: #2f2a28;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .serif {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .auth-shell {
+            width: 100%;
+            max-width: 1120px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #cf544c;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .brand-icon::after {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2f2a28;
+        }
+
+        .page-head {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+
+        .page-head h1 {
+            font-size: 52px;
+            color: #332d2a;
+            margin-bottom: 10px;
+        }
+
+        .page-head p {
+            font-size: 16px;
+            color: #8a847e;
+        }
+
+        .auth-card {
+            background: #fbfaf8;
+            border: 1px solid #eadfd7;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(65, 45, 38, 0.06);
+        }
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #f4eeea;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            color: #6b625d;
+            padding: 16px;
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: #cf544c;
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(207, 84, 76, 0.2);
+        }
+
+        .auth-content {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            min-height: 620px;
+        }
+
+        .auth-form-wrap {
+            padding: 42px;
+        }
+
+        .auth-panel {
+            display: none;
+        }
+
+        .auth-panel.active {
+            display: block;
+        }
+
+        .form-title {
+            font-size: 42px;
+            color: #332d2a;
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            color: #8a847e;
+            font-size: 16px;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #3f3835;
+        }
+
+        .required {
+            color: #cf544c;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f2eeea;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            padding: 0 16px;
+            height: 58px;
+            transition: 0.2s ease;
+        }
+
+        .input-wrap:focus-within {
+            border-color: #d9b4af;
+            background: #fff;
+        }
+
+        .input-icon {
+            color: #9a938d;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #3d3734;
+            font-size: 15px;
+        }
+
+        .input-wrap input::placeholder {
+            color: #a59d97;
+        }
+
+        .row-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 8px 0 24px;
+            flex-wrap: wrap;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4b4440;
+            font-size: 15px;
+        }
+
+        .remember-me input {
+            accent-color: #cf544c;
+            width: 16px;
+            height: 16px;
+        }
+
+        .text-link {
+            border: none;
+            background: transparent;
+            color: #cf544c;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .primary-btn {
+            width: 100%;
+            border: none;
+            border-radius: 16px;
+            background: #cf544c;
+            color: #fff;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(207, 84, 76, 0.18);
+            transition: 0.2s ease;
+        }
+
+        .primary-btn:hover,
+        .tab-btn:hover,
+        .text-link:hover,
+        .switch-text button:hover {
+            opacity: 0.92;
+        }
+
+        .switch-text {
+            margin-top: 26px;
+            text-align: center;
+            color: #8a847e;
+            font-size: 15px;
+        }
+
+        .switch-text button {
+            border: none;
+            background: transparent;
+            color: #cf544c;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 4px;
+        }
+
+        .auth-visual {
+            background: linear-gradient(160deg, #d35a52 0%, #bb433d 100%);
+            color: #fff;
+            padding: 42px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-visual::before,
+        .auth-visual::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .auth-visual::before {
+            width: 220px;
+            height: 220px;
+            top: -60px;
+            right: -40px;
+        }
+
+        .auth-visual::after {
+            width: 180px;
+            height: 180px;
+            bottom: -50px;
+            left: -30px;
+        }
+
+        .visual-kicker {
+            position: relative;
+            z-index: 1;
+            font-size: 14px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 14px;
+        }
+
+        .visual-title {
+            position: relative;
+            z-index: 1;
+            font-size: 46px;
+            line-height: 1.1;
+            margin-bottom: 18px;
+        }
+
+        .visual-text {
+            position: relative;
+            z-index: 1;
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 420px;
+            opacity: 0.96;
+        }
+
+        .visual-points {
+            position: relative;
+            z-index: 1;
+            margin-top: 28px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .visual-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            padding: 14px 16px;
+            border-radius: 16px;
+            backdrop-filter: blur(3px);
+        }
+
+        .visual-point-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .visual-point span {
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 920px) {
+            .auth-content {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-visual {
+                min-height: 280px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 14px;
+            }
+
+            .brand-name {
+                font-size: 24px;
+            }
+
+            .page-head h1 {
+                font-size: 38px;
+            }
+
+            .auth-form-wrap,
+            .auth-visual {
+                padding: 24px;
+            }
+
+            .form-title {
+                font-size: 34px;
+            }
+
+            .visual-title {
+                font-size: 34px;
+            }
+
+            .auth-tabs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-shell">
+        <div class="brand">
+            <div class="brand-icon"></div>
+            <div class="brand-name">Kyoto Cuisine</div>
+        </div>
+
+        <div class="page-head">
+            <h1 class="serif">Welcome Back</h1>
+            <p>Sign in or create an account to continue your Kyoto Cuisine experience.</p>
+        </div>
+
+
+
+        <div class="auth-content">
+            <div class="auth-form-wrap">
+                <div class="auth-panel active" id="signInPanel">
+                    <h2 class="form-title serif">Sign In</h2>
+                    <p class="form-subtitle">Access your account to place orders faster, save favorites, and track
+                        your meals.</p>
+
+                    <form>
+                        <div class="field-group">
+                            <label class="field-label">Email Address<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">✉</span>
+                                <input type="email" placeholder="your@email.com" />
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Password<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">🔒</span>
+                                <input type="password" placeholder="Enter your password" />
+                            </div>
+                        </div>
+
+                        <div class="row-between">
+                            <label class="remember-me">
+                                <input type="checkbox" />
+                                <span>Remember me</span>
+                            </label>
+                            <button type="button" class="text-link">Forgot password?</button>
+                        </div>
+
+                        <button type="submit" class="primary-btn">Sign In</button>
+                    </form>
+
+                    <div class="switch-text">
+                        Don&apos;t have an account?
+                        <button type="button" data-switch="signup">Sign up</button>
+                    </div>
+                </div>
+
+                <div class="auth-panel" id="signUpPanel">
+                    <h2 class="form-title serif">Create Account</h2>
+                    <p class="form-subtitle">Join Kyoto Cuisine and enjoy smoother ordering, saved details, and
+                        faster checkout.</p>
+
+                    <form>
+                        <div class="field-group">
+                            <label class="field-label">Full Name<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">👤</span>
+                                <input type="text" placeholder="Enter your full name" />
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Email Address<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">✉</span>
+                                <input type="email" placeholder="your@email.com" />
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Password<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">🔒</span>
+                                <input type="password" placeholder="Create a password" />
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Confirm Password<span class="required">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">🔐</span>
+                                <input type="password" placeholder="Confirm your password" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-btn">Create Account</button>
+                    </form>
+
+                    <div class="switch-text">
+                        Already have an account?
+                        <button type="button" data-switch="signin">Sign in</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-visual">
+                <div class="visual-kicker">Kyoto Cuisine</div>
+                <h2 class="visual-title serif">Fresh flavors, easy ordering.</h2>
+                <p class="visual-text">Sign in to revisit your favorites, or sign up to get a smoother checkout
+                    experience every time you order.</p>
+
+                <div class="visual-points">
+                    <div class="visual-point">
+                        <div class="visual-point-icon">✓</div>
+                        <span>Save your favorite dishes for quick reordering.</span>
+                    </div>
+                    <div class="visual-point">
+                        <div class="visual-point-icon">★</div>
+                        <span>Track orders and enjoy a more personalized experience.</span>
+                    </div>
+                    <div class="visual-point">
+                        <div class="visual-point-icon">⚡</div>
+                        <span>Checkout faster with your details ready to go.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const signInPanel = document.getElementById('signInPanel');
+        const signUpPanel = document.getElementById('signUpPanel');
+        const toggleButtons = document.querySelectorAll('[data-switch]');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        function showPanel(type) {
+            const isSignIn = type === 'signin';
+            signInPanel.classList.toggle('active', isSignIn);
+            signUpPanel.classList.toggle('active', !isSignIn);
+
+            tabButtons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.switch === type);
+            });
+        }
+
+        toggleButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                showPanel(button.dataset.switch);
+            });
+        });
+    </script>
+</body>
+
+</html>
