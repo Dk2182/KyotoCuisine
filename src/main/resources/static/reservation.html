@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyoto Cuisine - Reservations</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background: #f4f1ee; color: #2f2a28; }
+        .serif { font-family: Georgia, "Times New Roman", serif; }
+        .topbar { background: #fbfaf8; border-bottom: 1px solid #e4ddd7; padding: 14px 28px; }
+        .topbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+        .brand-icon { width: 38px; height: 38px; border-radius: 50%; background: #cf544c; position: relative; flex-shrink: 0; }
+        .brand-icon::after { content: ""; position: absolute; inset: 9px; border: 2px solid #fff; border-radius: 50%; }
+        .brand-name { font-size: 20px; font-weight: 700; }
+        .brand-subtitle { margin-top: 4px; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #8f8882; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-link { border: 1px solid #e4ddd7; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; text-decoration: none; transition: 0.2s; white-space: nowrap; }
+        .nav-link:hover { background: #f4f1ee; }
+        .nav-link.active { background: #cf544c; color: #fff; border-color: #cf544c; }
+        .topbar-actions { display: flex; align-items: center; gap: 12px; }
+        .user-btn { border: 1px solid #d8d0ca; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+        .hero { background: #fbfaf8; border-bottom: 1px solid #e7dfd9; text-align: center; padding: 48px 20px 30px; }
+        .hero h1 { font-size: 54px; color: #332d2a; margin-bottom: 12px; }
+        .hero p { color: #8a847e; font-size: 16px; }
+        .content { max-width: 960px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 20px; padding: 28px; }
+        .card-title { font-size: 24px; color: #332d2a; margin-bottom: 20px; }
+        .field-group { margin-bottom: 18px; }
+        .field-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #3f3835; }
+        .required { color: #cf544c; }
+        .input-wrap { display: flex; align-items: center; gap: 12px; background: #f2eeea; border: 1px solid transparent; border-radius: 14px; padding: 0 16px; height: 54px; transition: 0.2s; }
+        .input-wrap:focus-within { border-color: #d9b4af; background: #fff; }
+        .input-wrap input, .input-wrap select, .input-wrap textarea { width: 100%; border: none; outline: none; background: transparent; color: #3d3734; font-size: 15px; font-family: inherit; }
+        .input-wrap input::placeholder, .input-wrap textarea::placeholder { color: #a59d97; }
+        .textarea-wrap { height: auto; padding: 14px 16px; align-items: flex-start; }
+        .textarea-wrap textarea { resize: vertical; min-height: 60px; }
+        .primary-btn { width: 100%; border: none; border-radius: 14px; background: #cf544c; color: #fff; padding: 16px; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 22px rgba(207,84,76,0.18); transition: 0.2s; }
+        .primary-btn:hover { opacity: 0.92; }
+        .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .error-msg { background: #fde8e8; color: #b91c1c; padding: 12px 16px; border-radius: 12px; font-size: 14px; margin-bottom: 18px; display: none; }
+        .error-msg.show { display: block; }
+        .success-msg { background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 12px; font-size: 14px; margin-bottom: 18px; display: none; }
+        .success-msg.show { display: block; }
+        .info-text { color: #8a847e; font-size: 13px; margin-top: 6px; }
+        /* Reservation list */
+        .res-list { list-style: none; }
+        .res-item { border: 1px solid #e3d9d2; background: #fffdfb; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+        .res-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .res-id { font-weight: 700; color: #332d2a; }
+        .res-status { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .res-status.PENDING { background: #fef3c7; color: #92400e; }
+        .res-status.CONFIRMED { background: #dcfce7; color: #166534; }
+        .res-status.CANCELLED { background: #fde8e8; color: #b91c1c; }
+        .res-status.COMPLETED { background: #e0e7ff; color: #3730a3; }
+        .res-details { font-size: 14px; color: #5f5854; line-height: 1.6; }
+        .cancel-btn { border: 1px solid #fca5a5; background: #fff; color: #b91c1c; border-radius: 10px; padding: 8px 14px; font-size: 13px; cursor: pointer; margin-top: 10px; }
+        .cancel-btn:hover { background: #fde8e8; }
+        .empty-state { text-align: center; color: #8a847e; padding: 30px; font-size: 14px; }
+        @media (max-width: 768px) { .content { grid-template-columns: 1fr; } .hero h1 { font-size: 38px; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="/menuView.html"><div class="brand-icon"></div><div><div class="brand-name">Kyoto Cuisine</div><div class="brand-subtitle">Japanese Restaurant</div></div></a>
+            <div class="nav-links" id="navLinks"></div>
+            <div class="topbar-actions"><button class="user-btn" id="userBtn">Login</button></div>
+        </div>
+    </header>
+    <section class="hero">
+        <h1 class="serif">Reservations</h1>
+        <p>Book a table and enjoy an authentic dining experience</p>
+    </section>
+    <div class="content">
+        <div class="card">
+            <h2 class="card-title serif">Book a Table</h2>
+            <div class="error-msg" id="resError"></div>
+            <div class="success-msg" id="resSuccess"></div>
+            <form id="resForm">
+                <div class="field-group">
+                    <label class="field-label">Date<span class="required">*</span></label>
+                    <div class="input-wrap"><input type="date" id="resDate" required /></div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Time<span class="required">*</span></label>
+                    <div class="input-wrap"><input type="time" id="resTime" required min="11:00" max="21:00" /></div>
+                    <div class="info-text">Open hours: 11:00 AM - 10:00 PM. Last reservation at 9:00 PM.</div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Number of Guests<span class="required">*</span></label>
+                    <div class="input-wrap"><input type="number" id="resGuests" min="1" max="8" value="2" required /></div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Special Requests</label>
+                    <div class="input-wrap textarea-wrap"><textarea id="resRequest" placeholder="Window seat, birthday celebration, allergies..."></textarea></div>
+                </div>
+                <button type="submit" class="primary-btn" id="resBtn">Book Table</button>
+            </form>
+        </div>
+        <div class="card">
+            <h2 class="card-title serif">Your Reservations</h2>
+            <div id="resList"><div class="empty-state">Loading...</div></div>
+        </div>
+    </div>
+
+    <script>
+        function getSession() { return JSON.parse(localStorage.getItem('kyoto_session') || 'null'); }
+        const session = getSession();
+
+        function buildNav() {
+            const nav = document.getElementById('navLinks');
+            const userBtn = document.getElementById('userBtn');
+            let links = '<a class="nav-link" href="/menuView.html">Menu</a>';
+            links += '<a class="nav-link active" href="/reservation.html">Reservations</a>';
+            if (session && (session.role === 'STAFF' || session.role === 'ADMIN')) links += '<a class="nav-link" href="/staff.html">Staff</a>';
+            if (session && session.role === 'ADMIN') links += '<a class="nav-link" href="/admin.html">Admin</a>';
+            nav.innerHTML = links;
+            if (session && session.token) {
+                userBtn.textContent = session.firstName || 'Account';
+                userBtn.onclick = () => { if (confirm('Sign out?')) { localStorage.removeItem('kyoto_session'); location.reload(); }};
+            } else { userBtn.textContent = 'Login'; userBtn.onclick = () => { window.location.href = '/login.html'; }; }
+        }
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('resDate').min = today;
+        document.getElementById('resDate').value = today;
+
+        // Load reservations
+        async function loadReservations() {
+            const el = document.getElementById('resList');
+            if (!session || !session.token) { el.innerHTML = '<div class="empty-state">Please log in to see your reservations.</div>'; return; }
+            try {
+                const res = await fetch('/api/reservations', { headers: { 'Authorization': session.token } });
+                if (!res.ok) throw new Error('Failed to load');
+                const data = await res.json();
+                if (data.length === 0) { el.innerHTML = '<div class="empty-state">No reservations yet.</div>'; return; }
+                el.innerHTML = '<ul class="res-list">' + data.map(r => {
+                    const start = new Date(r.reservationStart);
+                    const dateStr = start.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                    const timeStr = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                    return `<li class="res-item">
+                        <div class="res-header">
+                            <span class="res-id">#${r.reservationId}</span>
+                            <span class="res-status ${r.statusName}">${r.statusName}</span>
+                        </div>
+                        <div class="res-details">
+                            ${dateStr} at ${timeStr}<br/>
+                            Guests: ${r.guestCount} &middot; Table: ${r.tableLabel}
+                            ${r.specialRequest ? '<br/>Note: ' + r.specialRequest : ''}
+                        </div>
+                        ${r.statusName === 'PENDING' || r.statusName === 'CONFIRMED' ? `<button class="cancel-btn" onclick="cancelRes(${r.reservationId})">Cancel Reservation</button>` : ''}
+                    </li>`;
+                }).join('') + '</ul>';
+            } catch (e) { el.innerHTML = '<div class="empty-state">Could not load reservations.</div>'; }
+        }
+
+        async function cancelRes(id) {
+            if (!confirm('Cancel this reservation?')) return;
+            try {
+                await fetch('/api/reservations/' + id, { method: 'DELETE', headers: { 'Authorization': session.token } });
+                loadReservations();
+            } catch (e) { alert('Failed to cancel'); }
+        }
+
+        // Book reservation
+        document.getElementById('resForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('resError');
+            const successEl = document.getElementById('resSuccess');
+            const btn = document.getElementById('resBtn');
+            errorEl.classList.remove('show');
+            successEl.classList.remove('show');
+
+            if (!session || !session.token) { window.location.href = '/login.html'; return; }
+
+            btn.disabled = true; btn.textContent = 'Booking...';
+            const dateTime = document.getElementById('resDate').value + 'T' + document.getElementById('resTime').value + ':00';
+
+            try {
+                const res = await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
+                    body: JSON.stringify({
+                        dateTime: dateTime,
+                        guestCount: parseInt(document.getElementById('resGuests').value),
+                        specialRequest: document.getElementById('resRequest').value || null
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                successEl.textContent = 'Reservation #' + data.reservationId + ' confirmed! Table ' + data.tableLabel + ' assigned. Check your email for confirmation.';
+                successEl.classList.add('show');
+                document.getElementById('resForm').reset();
+                document.getElementById('resDate').value = today;
+                loadReservations();
+            } catch (err) { errorEl.textContent = err.message; errorEl.classList.add('show'); }
+            finally { btn.disabled = false; btn.textContent = 'Book Table'; }
+        });
+
+        buildNav();
+        loadReservations();
+    </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyoto Cuisine - Admin Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background: #f4f1ee; color: #2f2a28; }
+        .serif { font-family: Georgia, "Times New Roman", serif; }
+        .topbar { background: #fbfaf8; border-bottom: 1px solid #e4ddd7; padding: 14px 28px; }
+        .topbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+        .brand-icon { width: 38px; height: 38px; border-radius: 50%; background: #cf544c; position: relative; flex-shrink: 0; }
+        .brand-icon::after { content: ""; position: absolute; inset: 9px; border: 2px solid #fff; border-radius: 50%; }
+        .brand-name { font-size: 20px; font-weight: 700; }
+        .brand-subtitle { margin-top: 4px; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #8f8882; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-link { border: 1px solid #e4ddd7; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; text-decoration: none; transition: 0.2s; white-space: nowrap; }
+        .nav-link:hover { background: #f4f1ee; }
+        .nav-link.active { background: #cf544c; color: #fff; border-color: #cf544c; }
+        .topbar-actions { display: flex; align-items: center; gap: 12px; }
+        .user-btn { border: 1px solid #d8d0ca; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+        .hero { background: #fbfaf8; border-bottom: 1px solid #e7dfd9; text-align: center; padding: 36px 20px 20px; }
+        .hero h1 { font-size: 44px; color: #332d2a; margin-bottom: 8px; }
+        .hero p { color: #8a847e; font-size: 15px; }
+        .content { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 16px; padding: 22px; }
+        .stat-label { font-size: 13px; color: #8a847e; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+        .stat-value { font-size: 32px; font-weight: 700; color: #332d2a; }
+        .stat-value.red { color: #cf544c; }
+        /* Tabs */
+        .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { border: 1px solid #e4ddd7; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: #cf544c; color: #fff; border-color: #cf544c; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        /* Tables */
+        .card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 18px; padding: 24px; overflow-x: auto; }
+        .card-title { font-size: 20px; color: #332d2a; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 10px 12px; background: #f4f1ee; color: #5f5854; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e4ddd7; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f0ece8; color: #4a4440; }
+        tr:hover td { background: #faf8f5; }
+        .status-badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .status-badge.NOT_PREPARING { background: #fee2e2; color: #b91c1c; }
+        .status-badge.PREPARING { background: #fef3c7; color: #92400e; }
+        .status-badge.READY { background: #dcfce7; color: #166534; }
+        .status-badge.COMPLETED { background: #e0e7ff; color: #3730a3; }
+        .status-badge.PENDING { background: #fef3c7; color: #92400e; }
+        .status-badge.CONFIRMED { background: #dcfce7; color: #166534; }
+        .status-badge.CANCELLED { background: #fee2e2; color: #b91c1c; }
+        .status-badge.PAID { background: #dcfce7; color: #166534; }
+        /* Menu management */
+        .menu-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+        .small-btn { border: 1px solid #d8d0ca; background: #fff; color: #433d39; border-radius: 10px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
+        .small-btn:hover { background: #f4f1ee; }
+        .small-btn.danger { border-color: #fca5a5; color: #b91c1c; }
+        .small-btn.danger:hover { background: #fde8e8; }
+        .small-btn.success { border-color: #86efac; color: #166534; }
+        .small-btn.success:hover { background: #dcfce7; }
+        .toggle-btn { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+        .toggle-btn.enabled { background: #dcfce7; color: #166534; }
+        .toggle-btn.disabled { background: #fee2e2; color: #b91c1c; }
+        /* Add menu item form */
+        .add-form { display: none; background: #faf8f5; border: 1px solid #e4ddd7; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+        .add-form.show { display: block; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-field { margin-bottom: 12px; }
+        .form-field label { display: block; font-size: 13px; font-weight: 600; color: #3f3835; margin-bottom: 4px; }
+        .form-field input, .form-field select { width: 100%; border: 1px solid #e4ddd7; border-radius: 10px; padding: 10px 12px; font-size: 14px; background: #fff; color: #3d3734; outline: none; }
+        .form-field input:focus, .form-field select:focus { border-color: #d9b4af; }
+        .form-field.full { grid-column: 1 / -1; }
+        .form-btn { border: none; border-radius: 10px; background: #cf544c; color: #fff; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .form-btn:hover { opacity: 0.92; }
+        .empty-state { text-align: center; color: #8a847e; padding: 40px; font-size: 14px; }
+        .refresh-note { font-size: 12px; color: #9a938d; text-align: center; margin-top: 16px; }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .form-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 32px; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="/menuView.html"><div class="brand-icon"></div><div><div class="brand-name">Kyoto Cuisine</div><div class="brand-subtitle">Japanese Restaurant</div></div></a>
+            <div class="nav-links" id="navLinks"></div>
+            <div class="topbar-actions"><button class="user-btn" id="userBtn">Admin</button></div>
+        </div>
+    </header>
+    <section class="hero">
+        <h1 class="serif">Admin Dashboard</h1>
+        <p>Manage your restaurant operations, menu, and analytics</p>
+    </section>
+    <div class="content">
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-label">Orders Today</div><div class="stat-value" id="statOrders">--</div></div>
+            <div class="stat-card"><div class="stat-label">Revenue Today</div><div class="stat-value red" id="statRevenue">--</div></div>
+            <div class="stat-card"><div class="stat-label">Bestselling Item</div><div class="stat-value" id="statBestseller" style="font-size:20px">--</div></div>
+            <div class="stat-card"><div class="stat-label">Active Reservations</div><div class="stat-value" id="statReservations">--</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="showTab('menu')">Manage Menu</button>
+            <button class="tab-btn" onclick="showTab('orders')">View Orders</button>
+            <button class="tab-btn" onclick="showTab('reservations')">Reservations</button>
+            <button class="tab-btn" onclick="showTab('logs')">System Logs</button>
+        </div>
+
+        <!-- MENU TAB -->
+        <div class="tab-panel active" id="tab-menu">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 class="card-title serif" style="margin:0">Menu Items</h3>
+                    <button class="small-btn" onclick="toggleAddForm()">+ Add Item</button>
+                </div>
+                <div class="add-form" id="addForm">
+                    <div class="form-grid">
+                        <div class="form-field"><label>Item Name</label><input id="newName" placeholder="e.g. Spicy Tuna Roll" /></div>
+                        <div class="form-field"><label>Category</label>
+                            <select id="newCategory"><option value="1">Sushi</option><option value="2">Drinks</option><option value="3">Desserts</option></select>
+                        </div>
+                        <div class="form-field"><label>Price ($)</label><input id="newPrice" type="number" step="0.01" min="0" placeholder="12.99" /></div>
+                        <div class="form-field"><label>Image URL</label><input id="newImage" placeholder="/assets/image.jpg" /></div>
+                        <div class="form-field full"><label>Description</label><input id="newDesc" placeholder="Short description..." /></div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="form-btn" onclick="addMenuItem()">Add Item</button>
+                        <button class="small-btn" onclick="toggleAddForm()">Cancel</button>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Bestseller</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="menuTableBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ORDERS TAB -->
+        <div class="tab-panel" id="tab-orders">
+            <div class="card">
+                <h3 class="card-title serif">All Orders</h3>
+                <table>
+                    <thead><tr><th>Order #</th><th>Customer</th><th>Type</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody id="ordersTableBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RESERVATIONS TAB -->
+        <div class="tab-panel" id="tab-reservations">
+            <div class="card">
+                <h3 class="card-title serif">All Reservations</h3>
+                <table>
+                    <thead><tr><th>ID</th><th>Customer</th><th>Date/Time</th><th>Guests</th><th>Table</th><th>Status</th><th>Request</th></tr></thead>
+                    <tbody id="resTableBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LOGS TAB -->
+        <div class="tab-panel" id="tab-logs">
+            <div class="card">
+                <h3 class="card-title serif">Audit Logs</h3>
+                <table>
+                    <thead><tr><th>ID</th><th>User</th><th>Action</th><th>Entity</th><th>Details</th><th>Time</th></tr></thead>
+                    <tbody id="logsTableBody"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="refresh-note">Dashboard auto-refreshes every 20 seconds</div>
+    </div>
+
+    <script>
+        function getSession() { return JSON.parse(localStorage.getItem('kyoto_session') || 'null'); }
+        const session = getSession();
+        if (!session || !session.token || session.role !== 'ADMIN') {
+            alert('Access denied. Admin role required.');
+            window.location.href = '/login.html';
+        }
+        const headers = { 'Authorization': session.token, 'Content-Type': 'application/json' };
+
+        function buildNav() {
+            document.getElementById('navLinks').innerHTML =
+                '<a class="nav-link" href="/menuView.html">Menu</a>' +
+                '<a class="nav-link" href="/reservation.html">Reservations</a>' +
+                '<a class="nav-link" href="/staff.html">Staff</a>' +
+                '<a class="nav-link active" href="/admin.html">Admin</a>';
+            const userBtn = document.getElementById('userBtn');
+            userBtn.textContent = session.firstName || 'Admin';
+            userBtn.onclick = () => { if (confirm('Sign out?')) { localStorage.removeItem('kyoto_session'); location.reload(); }};
+        }
+
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function formatPrice(v) { return '$' + parseFloat(v).toFixed(2); }
+        function formatDate(dt) { return new Date(dt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+
+        function toggleAddForm() { document.getElementById('addForm').classList.toggle('show'); }
+
+        // STATS
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats', { headers });
+                const s = await res.json();
+                document.getElementById('statOrders').textContent = s.ordersToday;
+                document.getElementById('statRevenue').textContent = formatPrice(s.revenueToday);
+                document.getElementById('statBestseller').textContent = s.bestsellerItem + (s.bestsellerQty > 0 ? ' (' + s.bestsellerQty + ' sold)' : '');
+                document.getElementById('statReservations').textContent = s.activeReservations;
+            } catch (e) { console.error(e); }
+        }
+
+        // MENU
+        async function loadMenu() {
+            try {
+                const res = await fetch('/api/admin/menu', { headers });
+                const items = await res.json();
+                document.getElementById('menuTableBody').innerHTML = items.length === 0
+                    ? '<tr><td colspan="7" class="empty-state">No menu items</td></tr>'
+                    : items.map(i => `<tr>
+                        <td>${i.menuItemId}</td>
+                        <td>${i.itemName}</td>
+                        <td>${i.categoryName}</td>
+                        <td>${formatPrice(i.price)}</td>
+                        <td>${i.bestseller ? 'Yes' : 'No'}</td>
+                        <td><button class="toggle-btn ${i.available ? 'enabled' : 'disabled'}" onclick="toggleItem(${i.menuItemId}, ${!i.available})">${i.available ? 'Active' : 'Disabled'}</button></td>
+                        <td><button class="toggle-btn ${i.available ? 'disabled' : 'enabled'}" onclick="toggleItem(${i.menuItemId}, ${!i.available})">${i.available ? 'Disable' : 'Enable'}</button></td>
+                    </tr>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function toggleItem(id, available) {
+            await fetch('/api/admin/menu/' + id + '/toggle', { method: 'PUT', headers, body: JSON.stringify({ isAvailable: available }) });
+            loadMenu();
+        }
+
+        async function addMenuItem() {
+            const name = document.getElementById('newName').value;
+            const price = document.getElementById('newPrice').value;
+            if (!name || !price) { alert('Name and price are required'); return; }
+            try {
+                const res = await fetch('/api/admin/menu', {
+                    method: 'POST', headers,
+                    body: JSON.stringify({
+                        itemName: name,
+                        menuCategoryId: parseInt(document.getElementById('newCategory').value),
+                        price: parseFloat(price),
+                        description: document.getElementById('newDesc').value,
+                        imageUrl: document.getElementById('newImage').value || '/assets/default.jpg',
+                        isBestseller: false, isAvailable: true
+                    })
+                });
+                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+                toggleAddForm();
+                document.getElementById('newName').value = '';
+                document.getElementById('newPrice').value = '';
+                document.getElementById('newDesc').value = '';
+                document.getElementById('newImage').value = '';
+                loadMenu();
+            } catch (e) { alert(e.message); }
+        }
+
+        // ORDERS
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/admin/orders', { headers });
+                const orders = await res.json();
+                document.getElementById('ordersTableBody').innerHTML = orders.length === 0
+                    ? '<tr><td colspan="7" class="empty-state">No orders</td></tr>'
+                    : orders.map(o => `<tr>
+                        <td>#${o.orderId}</td>
+                        <td>${o.customerName || 'Guest'}</td>
+                        <td>${o.orderType}</td>
+                        <td>${(o.items || []).map(i => i.itemName + ' x' + i.quantity).join(', ')}</td>
+                        <td>${formatPrice(o.totalAmount)}</td>
+                        <td><span class="status-badge ${o.statusName}">${o.statusName.replace('_',' ')}</span></td>
+                        <td>${formatDate(o.placedAt)}</td>
+                    </tr>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // RESERVATIONS
+        async function loadReservations() {
+            try {
+                const res = await fetch('/api/admin/reservations', { headers });
+                const data = await res.json();
+                document.getElementById('resTableBody').innerHTML = data.length === 0
+                    ? '<tr><td colspan="7" class="empty-state">No reservations</td></tr>'
+                    : data.map(r => `<tr>
+                        <td>#${r.reservationId}</td>
+                        <td>${r.customerName || '--'}</td>
+                        <td>${formatDate(r.reservationStart)}</td>
+                        <td>${r.guestCount}</td>
+                        <td>${r.tableLabel}</td>
+                        <td><span class="status-badge ${r.statusName}">${r.statusName}</span></td>
+                        <td>${r.specialRequest || '--'}</td>
+                    </tr>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // LOGS
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/admin/logs', { headers });
+                const logs = await res.json();
+                document.getElementById('logsTableBody').innerHTML = logs.length === 0
+                    ? '<tr><td colspan="6" class="empty-state">No logs yet</td></tr>'
+                    : logs.map(l => `<tr>
+                        <td>${l.logId}</td>
+                        <td>${l.userName || 'System'}</td>
+                        <td>${l.actionType}</td>
+                        <td>${l.entityName} #${l.entityId}</td>
+                        <td>${l.actionDetails || '--'}</td>
+                        <td>${formatDate(l.loggedAt)}</td>
+                    </tr>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function loadAll() { loadStats(); loadMenu(); loadOrders(); loadReservations(); loadLogs(); }
+
+        buildNav();
+        loadAll();
+        setInterval(loadAll, 20000);
+    </script>
+</body>
+</html>
