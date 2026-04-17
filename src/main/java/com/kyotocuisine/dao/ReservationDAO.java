@@ -1,24 +1,24 @@
 package com.kyotocuisine.dao;
 
+import com.kyotocuisine.db.DatabaseConnection;
 import com.kyotocuisine.model.Reservation;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ReservationDAO - handles reservations and table availability checks.
+ * Uses pure JDBC.
+ */
 @Repository
 public class ReservationDAO {
-    private final JdbcTemplate jdbc;
 
-    private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
+    private Reservation mapRow(ResultSet rs) throws SQLException {
         Reservation r = new Reservation();
         r.setReservationId(rs.getInt("reservation_id"));
         r.setCustomerId(rs.getInt("customer_id"));
@@ -29,35 +29,63 @@ public class ReservationDAO {
         r.setGuestCount(rs.getInt("guest_count"));
         r.setSpecialRequest(rs.getString("special_request"));
         r.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        try { r.setStatusName(rs.getString("status_name")); } catch (Exception e) {}
-        try { r.setTableLabel(rs.getString("table_label")); } catch (Exception e) {}
-        try { r.setCustomerName(rs.getString("customer_name")); } catch (Exception e) {}
+        try { r.setStatusName(rs.getString("status_name")); } catch (SQLException ignore) {}
+        try { r.setTableLabel(rs.getString("table_label")); } catch (SQLException ignore) {}
+        try { r.setCustomerName(rs.getString("customer_name")); } catch (SQLException ignore) {}
         return r;
-    };
-
-    public ReservationDAO(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
     }
 
+    /**
+     * Returns all active, big-enough tables that are NOT already reserved
+     * during the requested time window. Uses a subquery to exclude overlapping bookings.
+     */
     public List<Map<String, Object>> findAvailableTables(int guestCount, LocalDateTime start, LocalDateTime end) {
-        return jdbc.queryForList(
-            "SELECT rt.table_id, rt.table_label, rt.capacity FROM restaurant_tables rt " +
+        String sql =
+            "SELECT rt.table_id, rt.table_label, rt.capacity " +
+            "FROM restaurant_tables rt " +
             "WHERE rt.is_active = TRUE AND rt.capacity >= ? " +
             "AND rt.table_id NOT IN (" +
             "  SELECT r.table_id FROM reservations r " +
             "  JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
-            "  WHERE rs.status_name IN ('PENDING', 'CONFIRMED') " +
+            "  WHERE rs.status_name IN ('PENDING','CONFIRMED') " +
             "  AND r.reservation_start < ? AND r.reservation_end > ?" +
-            ") ORDER BY rt.capacity ASC",
-            guestCount, Timestamp.valueOf(end), Timestamp.valueOf(start));
+            ") " +
+            "ORDER BY rt.capacity ASC";
+
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, guestCount);
+            ps.setTimestamp(2, Timestamp.valueOf(end));
+            ps.setTimestamp(3, Timestamp.valueOf(start));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("table_id", rs.getInt("table_id"));
+                    row.put("table_label", rs.getString("table_label"));
+                    row.put("capacity", rs.getInt("capacity"));
+                    rows.add(row);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find available tables", e);
+        }
+
+        return rows;
     }
 
     public int createReservation(Reservation reservation) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO reservations (customer_id, table_id, reservation_status_id, reservation_start, reservation_end, guest_count, special_request) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        String sql = "INSERT INTO reservations (customer_id, table_id, reservation_status_id, " +
+                     "reservation_start, reservation_end, guest_count, special_request) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setInt(1, reservation.getCustomerId());
             ps.setInt(2, reservation.getTableId());
             ps.setInt(3, 1); // PENDING
@@ -65,42 +93,95 @@ public class ReservationDAO {
             ps.setTimestamp(5, Timestamp.valueOf(reservation.getReservationEnd()));
             ps.setInt(6, reservation.getGuestCount());
             ps.setString(7, reservation.getSpecialRequest());
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().intValue();
+
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+                throw new SQLException("No reservation ID generated");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create reservation", e);
+        }
     }
 
     public List<Reservation> findByCustomerId(int customerId) {
-        return jdbc.query(
-            "SELECT r.*, rs.status_name, rt.table_label, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
-            "FROM reservations r " +
-            "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
-            "JOIN restaurant_tables rt ON r.table_id = rt.table_id " +
-            "JOIN customer_profiles cp ON r.customer_id = cp.customer_id " +
-            "JOIN users u ON cp.user_id = u.user_id " +
-            "WHERE r.customer_id = ? ORDER BY r.reservation_start DESC",
-            rowMapper, customerId);
+        String sql = "SELECT r.*, rs.status_name, rt.table_label, " +
+                     "CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+                     "FROM reservations r " +
+                     "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
+                     "JOIN restaurant_tables rt ON r.table_id = rt.table_id " +
+                     "JOIN customer_profiles cp ON r.customer_id = cp.customer_id " +
+                     "JOIN users u ON cp.user_id = u.user_id " +
+                     "WHERE r.customer_id = ? ORDER BY r.reservation_start DESC";
+
+        List<Reservation> list = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load reservations", e);
+        }
+        return list;
     }
 
     public List<Reservation> findAll() {
-        return jdbc.query(
-            "SELECT r.*, rs.status_name, rt.table_label, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
-            "FROM reservations r " +
-            "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
-            "JOIN restaurant_tables rt ON r.table_id = rt.table_id " +
-            "JOIN customer_profiles cp ON r.customer_id = cp.customer_id " +
-            "JOIN users u ON cp.user_id = u.user_id " +
-            "ORDER BY r.reservation_start DESC",
-            rowMapper);
+        String sql = "SELECT r.*, rs.status_name, rt.table_label, " +
+                     "CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+                     "FROM reservations r " +
+                     "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
+                     "JOIN restaurant_tables rt ON r.table_id = rt.table_id " +
+                     "JOIN customer_profiles cp ON r.customer_id = cp.customer_id " +
+                     "JOIN users u ON cp.user_id = u.user_id " +
+                     "ORDER BY r.reservation_start DESC";
+
+        List<Reservation> list = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) list.add(mapRow(rs));
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load all reservations", e);
+        }
+        return list;
     }
 
     public void updateStatus(int reservationId, int statusId) {
-        jdbc.update("UPDATE reservations SET reservation_status_id = ? WHERE reservation_id = ?", statusId, reservationId);
+        String sql = "UPDATE reservations SET reservation_status_id = ? WHERE reservation_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, statusId);
+            ps.setInt(2, reservationId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update reservation status", e);
+        }
     }
 
     public int countActiveReservations() {
-        return jdbc.queryForObject(
-            "SELECT COUNT(*) FROM reservations r JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
-            "WHERE rs.status_name IN ('PENDING', 'CONFIRMED')", Integer.class);
+        String sql = "SELECT COUNT(*) FROM reservations r " +
+                     "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
+                     "WHERE rs.status_name IN ('PENDING','CONFIRMED')";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) return rs.getInt(1);
+            return 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to count reservations", e);
+        }
     }
 }

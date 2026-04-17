@@ -1,23 +1,24 @@
 package com.kyotocuisine.dao;
 
+import com.kyotocuisine.db.DatabaseConnection;
 import com.kyotocuisine.model.MenuItem;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * MenuDAO - handles reads and writes for menu_items and menu_categories.
+ * Uses pure JDBC: Connection, PreparedStatement, ResultSet.
+ */
 @Repository
 public class MenuDAO {
-    private final JdbcTemplate jdbc;
 
-    private final RowMapper<MenuItem> rowMapper = (rs, rowNum) -> {
+    private MenuItem mapRow(ResultSet rs) throws SQLException {
         MenuItem m = new MenuItem();
         m.setMenuItemId(rs.getInt("menu_item_id"));
         m.setMenuCategoryId(rs.getInt("menu_category_id"));
@@ -27,48 +28,101 @@ public class MenuDAO {
         m.setImageUrl(rs.getString("image_url"));
         m.setBestseller(rs.getBoolean("is_bestseller"));
         m.setAvailable(rs.getBoolean("is_available"));
-        try { m.setCategoryName(rs.getString("category_name")); } catch (Exception e) {}
+        try { m.setCategoryName(rs.getString("category_name")); } catch (SQLException ignore) {}
         return m;
-    };
-
-    public MenuDAO(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
     }
 
     public List<MenuItem> findAllAvailable() {
-        return jdbc.query(
-            "SELECT mi.*, mc.category_name FROM menu_items mi " +
-            "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
-            "WHERE mi.is_available = TRUE ORDER BY mc.category_name, mi.item_name",
-            rowMapper);
+        String sql = "SELECT mi.*, mc.category_name FROM menu_items mi " +
+                     "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
+                     "WHERE mi.is_available = TRUE " +
+                     "ORDER BY mc.category_name, mi.item_name";
+
+        List<MenuItem> items = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) items.add(mapRow(rs));
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load available menu", e);
+        }
+
+        return items;
     }
 
     public List<MenuItem> findAll() {
-        return jdbc.query(
-            "SELECT mi.*, mc.category_name FROM menu_items mi " +
-            "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
-            "ORDER BY mc.category_name, mi.item_name",
-            rowMapper);
+        String sql = "SELECT mi.*, mc.category_name FROM menu_items mi " +
+                     "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
+                     "ORDER BY mc.category_name, mi.item_name";
+
+        List<MenuItem> items = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) items.add(mapRow(rs));
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load menu", e);
+        }
+
+        return items;
     }
 
     public Optional<MenuItem> findById(int id) {
-        List<MenuItem> items = jdbc.query(
-            "SELECT mi.*, mc.category_name FROM menu_items mi " +
-            "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
-            "WHERE mi.menu_item_id = ?", rowMapper, id);
-        return items.isEmpty() ? Optional.empty() : Optional.of(items.get(0));
+        String sql = "SELECT mi.*, mc.category_name FROM menu_items mi " +
+                     "JOIN menu_categories mc ON mi.menu_category_id = mc.menu_category_id " +
+                     "WHERE mi.menu_item_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return Optional.of(mapRow(rs));
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find menu item", e);
+        }
     }
 
     public List<Map<String, Object>> findCategories() {
-        return jdbc.queryForList("SELECT * FROM menu_categories ORDER BY category_name");
+        String sql = "SELECT menu_category_id, category_name, description FROM menu_categories ORDER BY category_name";
+        List<Map<String, Object>> categories = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("menu_category_id", rs.getInt("menu_category_id"));
+                row.put("category_name", rs.getString("category_name"));
+                row.put("description", rs.getString("description"));
+                categories.add(row);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load categories", e);
+        }
+
+        return categories;
     }
 
     public int createItem(MenuItem item) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO menu_items (menu_category_id, item_name, description, price, image_url, is_bestseller, is_available) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        String sql = "INSERT INTO menu_items (menu_category_id, item_name, description, price, image_url, is_bestseller, is_available) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setInt(1, item.getMenuCategoryId());
             ps.setString(2, item.getItemName());
             ps.setString(3, item.getDescription());
@@ -76,19 +130,54 @@ public class MenuDAO {
             ps.setString(5, item.getImageUrl());
             ps.setBoolean(6, item.isBestseller());
             ps.setBoolean(7, item.isAvailable());
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().intValue();
+
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+                throw new SQLException("No generated ID returned");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create menu item", e);
+        }
     }
 
     public void updateItem(MenuItem item) {
-        jdbc.update(
-            "UPDATE menu_items SET menu_category_id=?, item_name=?, description=?, price=?, image_url=?, is_bestseller=?, is_available=? WHERE menu_item_id=?",
-            item.getMenuCategoryId(), item.getItemName(), item.getDescription(),
-            item.getPrice(), item.getImageUrl(), item.isBestseller(), item.isAvailable(), item.getMenuItemId());
+        String sql = "UPDATE menu_items SET menu_category_id=?, item_name=?, description=?, " +
+                     "price=?, image_url=?, is_bestseller=?, is_available=? WHERE menu_item_id=?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, item.getMenuCategoryId());
+            ps.setString(2, item.getItemName());
+            ps.setString(3, item.getDescription());
+            ps.setBigDecimal(4, item.getPrice());
+            ps.setString(5, item.getImageUrl());
+            ps.setBoolean(6, item.isBestseller());
+            ps.setBoolean(7, item.isAvailable());
+            ps.setInt(8, item.getMenuItemId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update menu item", e);
+        }
     }
 
     public void toggleAvailability(int id, boolean available) {
-        jdbc.update("UPDATE menu_items SET is_available = ? WHERE menu_item_id = ?", available, id);
+        String sql = "UPDATE menu_items SET is_available = ? WHERE menu_item_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setBoolean(1, available);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to toggle availability", e);
+        }
     }
 }

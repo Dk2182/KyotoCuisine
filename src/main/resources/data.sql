@@ -51,13 +51,16 @@ INSERT IGNORE INTO menu_items (menu_item_id, menu_category_id, item_name, descri
     (8, 3, 'Dorayaki', 'Sweet red bean pancake sandwich, lightly sweetened.', 6.99, '/assets/dorayaki.jpg', FALSE, TRUE);
 
 -- Default Admin account (password: admin123)
--- BCrypt hash for 'admin123'
 INSERT IGNORE INTO users (user_id, role_id, first_name, last_name, email, password_hash, is_active) VALUES
-    (1, 3, 'Admin', 'Kyoto', 'admin@kyotocuisine.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', TRUE);
+    (1, 3, 'Admin', 'Kyoto', 'admin@kyotocuisine.com', '$2a$10$AUN956ZlBExGC7B80i.D7eQFyo4jaZc2IMdmhvHSBLZH48f1QpYQm', TRUE);
 
 -- Default Staff account (password: staff123)
 INSERT IGNORE INTO users (user_id, role_id, first_name, last_name, email, password_hash, is_active) VALUES
-    (2, 2, 'Staff', 'Member', 'staff@kyotocuisine.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', TRUE);
+    (2, 2, 'Staff', 'Member', 'staff@kyotocuisine.com', '$2a$10$623rOvPFgofvYb0.mOz7yOapc3dQL5FYSnO4eAvMiVuCF/gYpl0Vy', TRUE);
 
 INSERT IGNORE INTO staff_profiles (staff_id, user_id, staff_position, hire_date) VALUES
     (1, 2, 'Waiter', '2025-09-01');
+
+-- Ensure the seeded passwords match documented credentials, even if rows already exist
+UPDATE users SET password_hash = '$2a$10$AUN956ZlBExGC7B80i.D7eQFyo4jaZc2IMdmhvHSBLZH48f1QpYQm' WHERE email = 'admin@kyotocuisine.com';
+UPDATE users SET password_hash = '$2a$10$623rOvPFgofvYb0.mOz7yOapc3dQL5FYSnO4eAvMiVuCF/gYpl0Vy' WHERE email = 'staff@kyotocuisine.com';
