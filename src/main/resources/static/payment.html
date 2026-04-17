@@ -56,6 +56,13 @@
         .order-type-btn.active { background: #cf544c; color: #fff; border-color: #cf544c; }
         .notes-input { width: 100%; border: 1px solid transparent; background: #f2eeea; border-radius: 14px; padding: 14px; font-size: 14px; color: #3d3734; outline: none; resize: vertical; min-height: 60px; font-family: inherit; }
         .notes-input:focus { border-color: #d9b4af; background: #fff; }
+        /* Test card info box */
+        .test-card-note { background: #fef6e4; border: 1px solid #f0d591; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+        .test-card-title { font-size: 13px; font-weight: 700; color: #7a5a0e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+        .test-card-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; color: #5f5854; gap: 12px; }
+        .test-card-row span { color: #8a847e; }
+        .test-card-row code { background: #fff; border: 1px solid #eadfd7; border-radius: 6px; padding: 3px 8px; font-family: "Courier New", monospace; font-size: 13px; color: #332d2a; font-weight: 600; user-select: all; }
+        .test-card-footer { margin-top: 10px; font-size: 11px; color: #8a847e; font-style: italic; text-align: center; }
         @media (max-width: 768px) { .checkout-container { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -90,6 +97,14 @@
                 <label class="field-label">Card Information</label>
                 <div id="card-element"></div>
                 <div id="card-errors"></div>
+            </div>
+            <div class="test-card-note">
+                <div class="test-card-title">Test Mode - Use These Card Details</div>
+                <div class="test-card-row"><span>Card number</span><code>4242 4242 4242 4242</code></div>
+                <div class="test-card-row"><span>Expiration</span><code>Any future date (e.g. 12/30)</code></div>
+                <div class="test-card-row"><span>CVC</span><code>Any 3 digits (e.g. 123)</code></div>
+                <div class="test-card-row"><span>ZIP / Postal</span><code>Any 5 digits (e.g. 12345)</code></div>
+                <div class="test-card-footer">No real charge will be made - this is a Stripe sandbox.</div>
             </div>
             <button class="pay-btn" id="payBtn" disabled>Pay Now</button>
         </div>
