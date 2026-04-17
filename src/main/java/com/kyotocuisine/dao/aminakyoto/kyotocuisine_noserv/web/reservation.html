@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyoto Cuisine - Reservation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">KYOTO CUISINE</div>
+        <nav>
+            <a href="menu.html">Menu</a>
+            <a href="reservation.html">Reservation</a>
+            <a href="/auth/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main class="page narrow">
+        <section class="hero small">
+            <h1>Book a Table</h1>
+            <p>Make a reservation for your next visit.</p>
+        </section>
+
+        <section class="form-card">
+            <form action="/reservations/create" method="post">
+                <label>Date</label>
+                <input type="date" name="date" required>
+
+                <label>Time</label>
+                <input type="time" name="time" required>
+
+                <label>Guests</label>
+                <input type="number" name="guests" min="1" required>
+
+                <button type="submit">Book Table</button>
+            </form>
+        </section>
+    </main>
+</body>
+
+</html>

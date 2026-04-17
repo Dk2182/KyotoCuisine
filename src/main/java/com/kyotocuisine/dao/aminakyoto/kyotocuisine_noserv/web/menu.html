@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyoto Cuisine - Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="panel form-panel">
+        <div class="brand">KYOTO CUISINE</div>
+        <h1>Our Menu</h1>
+        <p class="muted">Click a sushi item to add it to your cart.</p>
+
+        <div class="menu-grid">
+            <div class="card">
+                <h3>Dragon Roll</h3>
+                <p>$12.50</p>
+                <form action="/cart/add" method="post">
+                    <input type="hidden" name="menuItemId" value="1">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit">+ Add to Cart</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Salmon Nigiri</h3>
+                <p>$8.99</p>
+                <form action="/cart/add" method="post">
+                    <input type="hidden" name="menuItemId" value="2">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit">+ Add to Cart</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Tuna Sashimi</h3>
+                <p>$15.00</p>
+                <form action="/cart/add" method="post">
+                    <input type="hidden" name="menuItemId" value="3">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit">+ Add to Cart</button>
+                </form>
+            </div>
+        </div>
+
+        <br>
+        <a href="/cart/view">View Cart</a>
+        <br><br>
+        <a href="/auth/logout">Logout</a>
+    </div>
+</body>
+
+</html>
