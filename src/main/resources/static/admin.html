@@ -97,7 +97,7 @@
     <div class="page">
         <div class="page-head">
             <div>
-                <div class="eyebrow"><span class="jp" style="font-family:var(--jp); font-size:28px; letter-spacing:0; text-transform:none;">管理</span><span class="eyebrow-rule"></span><span>Admin overview</span></div>
+                <div class="eyebrow"><span>05</span><span class="eyebrow-rule"></span><span>Admin overview</span></div>
                 <h1>The <em>kitchen office</em>.</h1>
                 <div class="sub">Live metrics, menu control, guest history.</div>
             </div>
@@ -106,10 +106,10 @@
 
         <!-- Stats -->
         <div class="stats">
-            <div class="stat"><div class="lbl">Orders today</div><div class="num" id="statOrders">—</div><div class="jp">注</div></div>
-            <div class="stat"><div class="lbl">Revenue today</div><div class="num red" id="statRevenue">—</div><div class="jp">収</div></div>
-            <div class="stat"><div class="lbl">Bestselling item</div><div class="txt" id="statBestseller">—</div><div class="jp">人</div></div>
-            <div class="stat"><div class="lbl">Active reservations</div><div class="num" id="statReservations">—</div><div class="jp">予</div></div>
+            <div class="stat"><div class="lbl">Orders today</div><div class="num" id="statOrders">—</div></div>
+            <div class="stat"><div class="lbl">Revenue today</div><div class="num red" id="statRevenue">—</div></div>
+            <div class="stat"><div class="lbl">Bestselling item</div><div class="txt" id="statBestseller">—</div></div>
+            <div class="stat"><div class="lbl">Active reservations</div><div class="num" id="statReservations">—</div></div>
         </div>
 
         <!-- Tabs -->
@@ -163,8 +163,8 @@
             <div class="card-box">
                 <h3>All reservations</h3>
                 <table class="kc-table">
-                    <thead><tr><th>#</th><th>Customer</th><th>Date/time</th><th>Guests</th><th>Table</th><th>Status</th><th>Request</th></tr></thead>
-                    <tbody id="resTable"><tr><td colspan="7" style="text-align:center; font-style:italic; color:var(--ink-mute); padding:32px;">Loading...</td></tr></tbody>
+                    <thead><tr><th>#</th><th>Customer</th><th>Date/time</th><th>Guests</th><th>Table</th><th>Status</th><th>Request</th><th>Actions</th></tr></thead>
+                    <tbody id="resTable"><tr><td colspan="8" style="text-align:center; font-style:italic; color:var(--ink-mute); padding:32px;">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -291,8 +291,23 @@ async function loadReservations() {
         const r = await fetch('/api/admin/reservations', { headers });
         const data = await r.json();
         const body = document.getElementById('resTable');
-        if (!data.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--ink-mute); font-style:italic; padding:32px;">No reservations</td></tr>'; return; }
-        body.innerHTML = data.map(res => `
+        if (!data.length) { body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--ink-mute); font-style:italic; padding:32px;">No reservations</td></tr>'; return; }
+        body.innerHTML = data.map(res => {
+            let actions = '';
+            if (res.statusName === 'PENDING') {
+                actions = `
+                    <button class="toggle-btn" onclick="resAction(${res.reservationId},'confirm')" style="border-color:#2e7d4a;color:#2e7d4a;">Confirm</button>
+                    <button class="toggle-btn" onclick="resAction(${res.reservationId},'cancel')" style="border-color:var(--accent);color:var(--accent);">Cancel</button>
+                `;
+            } else if (res.statusName === 'CONFIRMED') {
+                actions = `
+                    <button class="toggle-btn" onclick="resAction(${res.reservationId},'complete')" style="border-color:var(--ink-mute);color:var(--ink-mute);">Complete</button>
+                    <button class="toggle-btn" onclick="resAction(${res.reservationId},'cancel')" style="border-color:var(--accent);color:var(--accent);">Cancel</button>
+                `;
+            } else {
+                actions = '<span style="color:var(--ink-faint); font-family:var(--mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase;">—</span>';
+            }
+            return `
             <tr>
                 <td>#${res.reservationId}</td>
                 <td>${res.customerName || '—'}</td>
@@ -300,11 +315,23 @@ async function loadReservations() {
                 <td>${res.guestCount}</td>
                 <td>${res.tableLabel}</td>
                 <td><span class="badge ${res.statusName}">${res.statusName}</span></td>
-                <td style="max-width:240px; font-style:italic; color:var(--ink-mute);">${res.specialRequest || '—'}</td>
+                <td style="max-width:220px; font-style:italic; color:var(--ink-mute);">${res.specialRequest || '—'}</td>
+                <td style="white-space:nowrap;"><div style="display:flex; gap:6px; flex-wrap:wrap;">${actions}</div></td>
             </tr>
-        `).join('');
+        `;}).join('');
     } catch (e) { console.error(e); }
 }
+
+async function resAction(id, action) {
+    const labels = { confirm: 'confirm', cancel: 'cancel', complete: 'mark as completed' };
+    if (!confirm('Are you sure you want to ' + labels[action] + ' reservation #' + id + '?')) return;
+    try {
+        const r = await fetch('/api/admin/reservations/' + id + '/' + action, { method: 'PUT', headers });
+        if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'failed'); }
+        loadReservations();
+    } catch (e) { alert(e.message); }
+}
+window.resAction = resAction;
 
 async function loadLogs() {
     try {

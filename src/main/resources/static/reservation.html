@@ -61,6 +61,18 @@
     display: flex;
     flex-direction: column;
 }
+/* Inverted field styles for the dark form panel */
+.form-panel .field-label { color: rgba(241, 235, 224, 0.6); }
+.form-panel .field input,
+.form-panel .field textarea {
+    color: var(--bg) !important;
+    border-bottom: 1px solid rgba(241, 235, 224, 0.25);
+}
+.form-panel .field input::placeholder,
+.form-panel .field textarea::placeholder { color: rgba(241, 235, 224, 0.35); }
+.form-panel .field input:focus,
+.form-panel .field textarea:focus { border-bottom-color: var(--bg); }
+.form-panel .field:focus-within .field-label { color: var(--accent); }
 .step-header {
     display: flex;
     gap: 0;
@@ -233,7 +245,7 @@
     <div id="kc-nav-slot"></div>
 
     <div class="page">
-        <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations · 予約</span></div>
+        <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations</span></div>
 
         <div class="reserve-grid">
             <!-- Left: context + summary -->
@@ -304,7 +316,6 @@
                             <div class="enso-accent">
                                 <svg viewBox="0 0 200 200"><defs><filter id="se91"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="91"/><feDisplacementMap in="SourceGraphic" scale="6"/></filter></defs><path d="M 100 20 A 80 80 0 1 1 40 140" stroke="currentColor" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#se91)" opacity="0.95"/></svg>
                             </div>
-                            <div class="kan">印</div>
                             <h3>Your seat is <em>held.</em></h3>
                             <p>A confirmation will reach <span class="hi" id="sealEmail">your inbox</span> shortly. Chef Tanaka looks forward to greeting you.</p>
                         </div>
@@ -370,13 +381,13 @@ document.querySelectorAll('.party-btn').forEach(btn => btn.onclick = () => {
 
 // Experience buttons
 const EXPS = [
-    { id: 'counter', jp: '席', label: 'At the counter', sub: '12 seats · chef in view' },
-    { id: 'terrace', jp: '露台', label: 'Stone terrace', sub: 'à la carte · by the sea' },
-    { id: 'omakase', jp: '任', label: 'Omakase · dusk', sub: '19 courses · €180 pp' },
+    { id: 'counter', label: 'At the counter', sub: '12 seats · chef in view' },
+    { id: 'terrace', label: 'Stone terrace', sub: 'à la carte · by the sea' },
+    { id: 'omakase', label: 'Omakase · dusk', sub: '19 courses · €180 pp' },
 ];
 document.getElementById('expGrid').innerHTML = EXPS.map(e =>
     `<button class="exp-btn ${e.id === state.experience ? 'on' : ''}" data-exp="${e.id}">
-        <div class="jp">${e.jp}</div><div class="t">${e.label}</div><div class="s">${e.sub}</div>
+        <div class="t">${e.label}</div><div class="s">${e.sub}</div>
     </button>`
 ).join('');
 document.querySelectorAll('.exp-btn').forEach(btn => btn.onclick = () => {

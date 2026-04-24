@@ -34,8 +34,10 @@
     window.addEventListener('scroll', updateNav, { passive: true });
     document.addEventListener('DOMContentLoaded', updateNav);
 
-    // ==== Fountain-pen ink cursor trail ====
-    // Skip on reduced-motion and touch devices (per handoff)
+    // ==== Fountain-pen ink cursor trail — DISABLED ====
+    // Kept the canvas + scroll reveal code above; no mouse ink follow.
+    return;
+    // eslint-disable-next-line no-unreachable
     if (reduceMotion || touchDevice) return;
 
     document.addEventListener('DOMContentLoaded', () => {

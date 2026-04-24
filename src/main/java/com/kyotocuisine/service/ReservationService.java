@@ -82,4 +82,19 @@ public class ReservationService {
         reservationDAO.updateStatus(reservationId, 3); // CANCELLED
         auditLogDAO.insertLog(null, "CANCEL_RESERVATION", "reservations", reservationId, "Reservation cancelled");
     }
+
+    public void confirmReservation(int reservationId, Integer userId) {
+        reservationDAO.updateStatus(reservationId, 2); // CONFIRMED
+        auditLogDAO.insertLog(userId, "CONFIRM_RESERVATION", "reservations", reservationId, "Reservation confirmed");
+    }
+
+    public void completeReservation(int reservationId, Integer userId) {
+        reservationDAO.updateStatus(reservationId, 4); // COMPLETED
+        auditLogDAO.insertLog(userId, "COMPLETE_RESERVATION", "reservations", reservationId, "Reservation marked completed");
+    }
+
+    public void cancelReservationAsStaff(int reservationId, Integer userId) {
+        reservationDAO.updateStatus(reservationId, 3); // CANCELLED
+        auditLogDAO.insertLog(userId, "CANCEL_RESERVATION", "reservations", reservationId, "Reservation cancelled by staff/admin");
+    }
 }

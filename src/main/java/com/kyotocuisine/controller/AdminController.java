@@ -51,6 +51,42 @@ public class AdminController {
         return ResponseEntity.ok(reservationService.getAllReservations());
     }
 
+    @PutMapping("/reservations/{id}/confirm")
+    public ResponseEntity<?> confirmReservation(@PathVariable int id, @RequestHeader(value = "Authorization", required = false) String token) {
+        if (!isAdmin(token)) return ResponseEntity.status(403).body(Map.of("error", "Access denied"));
+        try {
+            Integer userId = userService.getUserFromToken(token).map(u -> u.getUserId()).orElse(null);
+            reservationService.confirmReservation(id, userId);
+            return ResponseEntity.ok(Map.of("message", "Reservation confirmed"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/reservations/{id}/cancel")
+    public ResponseEntity<?> cancelReservationAdmin(@PathVariable int id, @RequestHeader(value = "Authorization", required = false) String token) {
+        if (!isAdmin(token)) return ResponseEntity.status(403).body(Map.of("error", "Access denied"));
+        try {
+            Integer userId = userService.getUserFromToken(token).map(u -> u.getUserId()).orElse(null);
+            reservationService.cancelReservationAsStaff(id, userId);
+            return ResponseEntity.ok(Map.of("message", "Reservation cancelled"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/reservations/{id}/complete")
+    public ResponseEntity<?> completeReservation(@PathVariable int id, @RequestHeader(value = "Authorization", required = false) String token) {
+        if (!isAdmin(token)) return ResponseEntity.status(403).body(Map.of("error", "Access denied"));
+        try {
+            Integer userId = userService.getUserFromToken(token).map(u -> u.getUserId()).orElse(null);
+            reservationService.completeReservation(id, userId);
+            return ResponseEntity.ok(Map.of("message", "Reservation marked completed"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/logs")
     public ResponseEntity<?> getLogs(@RequestHeader(value = "Authorization", required = false) String token) {
         if (!isAdmin(token)) return ResponseEntity.status(403).body(Map.of("error", "Access denied"));

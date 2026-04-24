@@ -18,15 +18,7 @@
     position: relative; overflow: hidden;
     display: flex; flex-direction: column; justify-content: space-between;
 }
-.auth-right::before {
-    content: "歓迎"; position: absolute;
-    top: -60px; right: -30px;
-    font-family: var(--jp);
-    font-size: 280px;
-    color: rgba(241,235,224,0.05);
-    line-height: 1;
-    pointer-events: none;
-}
+.auth-right::before { display: none; }
 
 .tabs { display: flex; gap: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--paper-line); padding-bottom: 16px; }
 .tab { background: none; border: none; padding: 4px 0; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); position: relative; }
@@ -149,8 +141,7 @@ form { display: flex; flex-direction: column; }
             <!-- RIGHT: brand -->
             <div class="auth-right">
                 <div>
-                    <div class="auth-right-kanji">京都</div>
-                    <h2>Fresh flavors, <em>easy ordering.</em></h2>
+                    <h2 style="margin-top:0;">Fresh flavors, <em>easy ordering.</em></h2>
                     <p>Sign in to revisit your favorites, or register to move through checkout with less friction.</p>
 
                     <div class="auth-right-points">

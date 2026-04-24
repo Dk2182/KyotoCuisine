@@ -106,10 +106,11 @@
 .hero-meta-cols { display: flex; gap: 48px; flex-wrap: wrap; }
 .hero-meta-col .lbl { color: var(--ink-faint); margin-bottom: 6px; font-size: 10px; }
 .hero-meta-jp {
-    font-family: var(--jp);
-    font-size: 14px;
-    letter-spacing: 0.4em;
-    writing-mode: vertical-rl;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
 }
 
 /* ================== STORY ================== */
@@ -402,15 +403,7 @@
     overflow: hidden;
 }
 .reserve-cta-right::before {
-    content: "予約";
-    position: absolute;
-    top: -30px; right: -20px;
-    font-family: var(--jp);
-    font-size: 220px;
-    color: rgba(241, 235, 224, 0.06);
-    line-height: 1;
-    font-weight: 400;
-    pointer-events: none;
+    display: none;
 }
 .reserve-cta-right .note { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(241,235,224,0.5); }
 .reserve-cta-right .big  { font-family: var(--serif); font-size: 56px; font-weight: 300; line-height: 1.05; margin: 0; }
@@ -613,7 +606,7 @@
                 <div class="hero-meta-col"><div class="lbl">Chef</div><div>Haruki Tanaka</div></div>
                 <div class="hero-meta-col"><div class="lbl">Seats</div><div>Twelve</div></div>
             </div>
-            <div class="hero-meta-jp">雅 · 静 · 海</div>
+            <div class="hero-meta-jp">Dubrovnik · Old Town</div>
         </div>
     </div>
 </section>
@@ -624,12 +617,9 @@
     <div class="story-grid">
         <div>
             <h2 class="reveal" data-delay="100">Two seas, <em>one stillness.</em></h2>
-            <div class="story-body-grid reveal" data-delay="300">
-                <div class="story-big-kanji">静</div>
-                <div class="story-body">
-                    <p>In Kyoto, chef Tanaka was taught to listen for the moment rice stops speaking. In Dubrovnik, he found the same silence between waves lapping against stone.</p>
-                    <p>Kyoto Cuisine is a counter of twelve seats where those two silences meet — Hokkaido uni beside Ston oyster, Tsugaru mackerel cured in Pag salt, wasabi grated on Dalmatian stone.</p>
-                </div>
+            <div class="story-body reveal" data-delay="300" style="margin-top:48px;">
+                <p>In Kyoto, chef Tanaka was taught to listen for the moment rice stops speaking. In Dubrovnik, he found the same silence between waves lapping against stone.</p>
+                <p>Kyoto Cuisine is a counter of twelve seats where those two silences meet — Hokkaido uni beside Ston oyster, Tsugaru mackerel cured in Pag salt, wasabi grated on Dalmatian stone.</p>
             </div>
         </div>
         <div style="display:flex; flex-direction:column; gap:48px;">
@@ -658,7 +648,7 @@
 <!-- ================ MENU ================ -->
 <section class="menu-sec" id="menu">
     <div class="menu-sec-inner">
-        <div class="eyebrow reveal"><span>02</span><span class="eyebrow-rule"></span><span>The Menu · お品書き</span></div>
+        <div class="eyebrow reveal"><span>02</span><span class="eyebrow-rule"></span><span>The Menu</span></div>
         <div class="menu-headline reveal" data-delay="100">
             <h2>Composed in <em>four movements.</em></h2>
             <p class="menu-legend">The omakase shifts with tide and season. Prices in euro. Dishes marked <span class="tag-mini">◇ DALMATIA</span> source from within 100 km.</p>
@@ -685,7 +675,7 @@
 
 <!-- ================ RESERVE CTA ================ -->
 <section class="reserve-cta" id="reserve">
-    <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations · 予約</span></div>
+    <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations</span></div>
     <div class="reserve-cta-grid">
         <div class="reveal">
             <h2>Twelve seats. <em>Two services.</em></h2>
@@ -693,7 +683,7 @@
             <a href="/reservation.html" class="btn btn-ink">Begin your reservation</a>
         </div>
         <div class="reserve-cta-right reveal" data-delay="200">
-            <div class="note">予約 · Reservation</div>
+            <div class="note">Reservation</div>
             <div class="big">Seal your <em>seat</em> at the counter.</div>
             <div class="sub">Four quiet questions — party, date, guest, note for chef. Thirty seconds.</div>
             <a href="/reservation.html" class="btn btn-accent">Begin →</a>
