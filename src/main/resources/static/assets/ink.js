@@ -147,32 +147,38 @@ window.kcCart = {
 };
 
 // ==== Nav builder — shared across pages ====
+//
+// Every page renders the EXACT same set of main links. Role-gated links
+// (Staff, Admin, Account) only appear when the user has the corresponding
+// role, but they always appear in the same position for those users.
+//
+// Story / Visit use "/#story" / "/#visit" — on the landing page these
+// smooth-scroll to the section; from other pages they navigate back to
+// the landing first and then jump to the anchor.
 window.buildKyotoNav = function (activeLink) {
     const session = window.kcSession.get();
     const cartCount = window.kcCart.count();
-
-    let links = [];
-    // Landing sections (anchor links) when on /
     const onLanding = window.location.pathname === '/' || window.location.pathname === '/index.html';
-    if (onLanding) {
-        links.push(['Story', '#story']);
-        links.push(['Menu', '#menu']);
-        links.push(['Reserve', '/reservation.html']);
-        links.push(['Visit', '#visit']);
-    } else {
-        links.push(['Home', '/']);
-        links.push(['Menu', '/menuView.html']);
-        links.push(['Reserve', '/reservation.html']);
-        if (session && (session.role === 'STAFF' || session.role === 'ADMIN')) links.push(['Staff', '/staff.html']);
-        if (session && session.role === 'ADMIN') links.push(['Admin', '/admin.html']);
-        if (session) links.push(['Account', '/account.html']);
-    }
+
+    const links = [
+        ['Home',    '/'],
+        ['Menu',    '/menuView.html'],
+        ['Reserve', '/reservation.html'],
+        ['Story',   '/#story'],
+        ['Visit',   '/#visit'],
+    ];
+    if (session && (session.role === 'STAFF' || session.role === 'ADMIN')) links.push(['Staff', '/staff.html']);
+    if (session && session.role === 'ADMIN') links.push(['Admin', '/admin.html']);
+    if (session) links.push(['Account', '/account.html']);
 
     const linksHtml = links.map(([text, href]) => {
         const act = activeLink && activeLink.toLowerCase() === text.toLowerCase();
         const style = act ? 'style="color:var(--accent)"' : '';
-        if (href.startsWith('#')) {
-            return `<a href="${href}" onclick="event.preventDefault();document.querySelector('${href}')?.scrollIntoView({behavior:'smooth'})" ${style}>${text}</a>`;
+        // On the landing page we hijack /#story & /#visit to smooth-scroll
+        // instead of reloading. Everywhere else, let the browser navigate.
+        if (onLanding && href.startsWith('/#')) {
+            const anchor = href.substring(1); // "#story"
+            return `<a href="${href}" onclick="event.preventDefault();document.querySelector('${anchor}')?.scrollIntoView({behavior:'smooth'})" ${style}>${text}</a>`;
         }
         return `<a href="${href}" ${style}>${text}</a>`;
     }).join('');
