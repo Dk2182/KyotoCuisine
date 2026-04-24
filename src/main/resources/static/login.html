@@ -1,163 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kyoto Cuisine - Sign In</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; background: #f7f4f1; color: #2f2a28; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .serif { font-family: Georgia, "Times New Roman", serif; }
-        .auth-shell { width: 100%; max-width: 1120px; }
-        .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
-        .brand-icon { width: 42px; height: 42px; border-radius: 50%; background: #cf544c; position: relative; flex-shrink: 0; }
-        .brand-icon::after { content: ""; position: absolute; inset: 9px; border: 2px solid #fff; border-radius: 50%; }
-        .brand-name { font-size: 28px; font-weight: 700; color: #2f2a28; }
-        .page-head { text-align: center; margin-bottom: 34px; }
-        .page-head h1 { font-size: 52px; color: #332d2a; margin-bottom: 10px; }
-        .page-head p { font-size: 16px; color: #8a847e; }
-        .auth-card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 28px; overflow: hidden; box-shadow: 0 16px 40px rgba(65, 45, 38, 0.06); }
-        .auth-content { display: grid; grid-template-columns: 1.05fr 0.95fr; min-height: 620px; }
-        .auth-form-wrap { padding: 42px; }
-        .auth-panel { display: none; }
-        .auth-panel.active { display: block; }
-        .form-title { font-size: 42px; color: #332d2a; margin-bottom: 10px; }
-        .form-subtitle { color: #8a847e; font-size: 16px; margin-bottom: 28px; line-height: 1.5; }
-        .field-group { margin-bottom: 18px; }
-        .field-label { display: block; margin-bottom: 10px; font-size: 15px; font-weight: 700; color: #3f3835; }
-        .required { color: #cf544c; }
-        .input-wrap { display: flex; align-items: center; gap: 12px; background: #f2eeea; border: 1px solid transparent; border-radius: 16px; padding: 0 16px; height: 58px; transition: 0.2s ease; }
-        .input-wrap:focus-within { border-color: #d9b4af; background: #fff; }
-        .input-icon { color: #9a938d; font-size: 18px; width: 20px; text-align: center; flex-shrink: 0; }
-        .input-wrap input { width: 100%; border: none; outline: none; background: transparent; color: #3d3734; font-size: 15px; }
-        .input-wrap input::placeholder { color: #a59d97; }
-        .row-between { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 8px 0 24px; flex-wrap: wrap; }
-        .remember-me { display: flex; align-items: center; gap: 10px; color: #4b4440; font-size: 15px; }
-        .remember-me input { accent-color: #cf544c; width: 16px; height: 16px; }
-        .primary-btn { width: 100%; border: none; border-radius: 16px; background: #cf544c; color: #fff; padding: 16px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 22px rgba(207, 84, 76, 0.18); transition: 0.2s ease; }
-        .primary-btn:hover { opacity: 0.92; }
-        .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .switch-text { margin-top: 26px; text-align: center; color: #8a847e; font-size: 15px; }
-        .switch-text button { border: none; background: transparent; color: #cf544c; font-size: 15px; font-weight: 700; cursor: pointer; padding: 0; margin-left: 4px; }
-        .auth-visual { background: linear-gradient(160deg, #d35a52 0%, #bb433d 100%); color: #fff; padding: 42px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-        .auth-visual::before, .auth-visual::after { content: ""; position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.08); }
-        .auth-visual::before { width: 220px; height: 220px; top: -60px; right: -40px; }
-        .auth-visual::after { width: 180px; height: 180px; bottom: -50px; left: -30px; }
-        .visual-kicker { position: relative; z-index: 1; font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.8; margin-bottom: 14px; }
-        .visual-title { position: relative; z-index: 1; font-size: 46px; line-height: 1.1; margin-bottom: 18px; }
-        .visual-text { position: relative; z-index: 1; font-size: 17px; line-height: 1.7; max-width: 420px; opacity: 0.96; }
-        .visual-points { position: relative; z-index: 1; margin-top: 28px; display: grid; gap: 14px; }
-        .visual-point { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.14); padding: 14px 16px; border-radius: 16px; }
-        .visual-point-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.16); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .visual-point span { font-size: 15px; line-height: 1.5; }
-        .error-msg { background: #fde8e8; color: #b91c1c; padding: 12px 16px; border-radius: 12px; font-size: 14px; margin-bottom: 18px; display: none; }
-        .error-msg.show { display: block; }
-        .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
-        .tab-btn { flex: 1; border: none; background: #f2eeea; color: #6b625d; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .tab-btn.active { background: #cf544c; color: #fff; }
-        @media (max-width: 920px) { .auth-content { grid-template-columns: 1fr; } .auth-visual { min-height: 280px; } }
-        @media (max-width: 640px) { body { padding: 14px; } .brand-name { font-size: 24px; } .page-head h1 { font-size: 38px; } .auth-form-wrap, .auth-visual { padding: 24px; } .form-title { font-size: 34px; } .visual-title { font-size: 34px; } .name-row { grid-template-columns: 1fr; } }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign in — Kyoto Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/design.css">
+<style>
+.page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 140px 24px 80px; position: relative; }
+.auth-wrap { width: 100%; max-width: 1040px; display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border: 1px solid var(--paper-line); }
+.auth-left { padding: 56px 48px; }
+.auth-right {
+    background: var(--ink); color: var(--bg);
+    padding: 56px 48px;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+}
+.auth-right::before {
+    content: "歓迎"; position: absolute;
+    top: -60px; right: -30px;
+    font-family: var(--jp);
+    font-size: 280px;
+    color: rgba(241,235,224,0.05);
+    line-height: 1;
+    pointer-events: none;
+}
+
+.tabs { display: flex; gap: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--paper-line); padding-bottom: 16px; }
+.tab { background: none; border: none; padding: 4px 0; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); position: relative; }
+.tab.active { color: var(--ink); }
+.tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -17px; height: 1px; background: var(--ink); }
+
+.panel-title { font-family: var(--serif); font-size: clamp(36px, 4vw, 56px); font-weight: 300; line-height: 1.05; margin: 0 0 12px; }
+.panel-title em { font-style: italic; font-weight: 300; }
+.panel-sub { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-mute); margin: 0 0 36px; line-height: 1.5; }
+
+form { display: flex; flex-direction: column; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.auth-submit {
+    margin-top: 12px;
+    padding: 18px;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 300ms;
+}
+.auth-submit:hover:not(:disabled) { background: var(--accent); }
+.auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-foot { margin-top: 24px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); text-align: center; }
+.auth-foot button { background: none; border: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0; text-transform: inherit; letter-spacing: inherit; }
+
+/* Right panel (visual) */
+.auth-right-kanji { font-family: var(--jp); font-size: 80px; font-weight: 400; line-height: 1; position: relative; z-index: 1; }
+.auth-right h2 { font-family: var(--serif); font-size: 44px; font-weight: 300; line-height: 1.05; margin: 24px 0 16px; position: relative; z-index: 1; }
+.auth-right h2 em { font-style: italic; }
+.auth-right p { font-family: var(--serif); font-style: italic; font-size: 17px; color: rgba(241,235,224,0.7); line-height: 1.6; margin: 0; max-width: 36ch; position: relative; z-index: 1; }
+.auth-right-points { display: flex; flex-direction: column; gap: 14px; margin-top: 40px; position: relative; z-index: 1; }
+.auth-right-point { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid rgba(241,235,224,0.15); }
+.auth-right-point .kanji { font-family: var(--jp); font-size: 22px; color: var(--sakura); }
+.auth-right-point .text  { font-family: var(--serif); font-size: 16px; line-height: 1.4; }
+.auth-right-foot { margin-top: 32px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(241,235,224,0.5); position: relative; z-index: 1; }
+
+@media (max-width: 900px) { .auth-wrap { grid-template-columns: 1fr; } .auth-right { order: -1; padding: 40px; } .two-col { grid-template-columns: 1fr; } }
+@media (max-width: 500px) { .auth-left { padding: 40px 28px; } }
+</style>
 </head>
 <body>
-    <div class="auth-shell">
-        <div class="brand"><div class="brand-icon"></div><div class="brand-name">Kyoto Cuisine</div></div>
-        <div class="page-head"><h1 class="serif">Welcome Back</h1><p>Sign in or create an account to continue your Kyoto Cuisine experience.</p></div>
-        <div class="auth-card">
-            <div class="auth-content">
-                <div class="auth-form-wrap">
-                    <div class="auth-panel active" id="signInPanel">
-                        <div class="tabs"><button class="tab-btn active" onclick="showPanel('signin')">Sign In</button><button class="tab-btn" onclick="showPanel('signup')">Sign Up</button></div>
-                        <h2 class="form-title serif">Sign In</h2>
-                        <p class="form-subtitle">Access your account to place orders faster and track your meals.</p>
-                        <div class="error-msg" id="loginError"></div>
-                        <form id="loginForm">
-                            <div class="field-group"><label class="field-label">Email Address<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#9993;</span><input type="email" id="loginEmail" placeholder="your@email.com" required /></div></div>
-                            <div class="field-group"><label class="field-label">Password<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#128274;</span><input type="password" id="loginPassword" placeholder="Enter your password" required /></div></div>
-                            <div class="row-between"><label class="remember-me"><input type="checkbox" /><span>Remember me</span></label></div>
-                            <button type="submit" class="primary-btn" id="loginBtn">Sign In</button>
-                        </form>
-                        <div class="switch-text">Don't have an account? <button type="button" onclick="showPanel('signup')">Sign up</button></div>
-                    </div>
-                    <div class="auth-panel" id="signUpPanel">
-                        <div class="tabs"><button class="tab-btn" onclick="showPanel('signin')">Sign In</button><button class="tab-btn active" onclick="showPanel('signup')">Sign Up</button></div>
-                        <h2 class="form-title serif">Create Account</h2>
-                        <p class="form-subtitle">Join Kyoto Cuisine for smoother ordering and faster checkout.</p>
-                        <div class="error-msg" id="registerError"></div>
-                        <form id="registerForm">
-                            <div class="name-row">
-                                <div class="field-group"><label class="field-label">First Name<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#128100;</span><input type="text" id="regFirstName" placeholder="First name" required /></div></div>
-                                <div class="field-group"><label class="field-label">Last Name<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#128100;</span><input type="text" id="regLastName" placeholder="Last name" required /></div></div>
+<canvas id="ink-canvas"></canvas>
+<div id="root">
+    <div id="kc-nav-slot"></div>
+    <div class="page">
+        <div class="auth-wrap reveal">
+            <!-- LEFT: forms -->
+            <div class="auth-left">
+                <div class="eyebrow"><span>入</span><span class="eyebrow-rule"></span><span id="tabLabel">Welcome back</span></div>
+                <div class="tabs">
+                    <button class="tab active" id="tabSignIn">Sign in</button>
+                    <button class="tab" id="tabSignUp">Create account</button>
+                </div>
+
+                <!-- SIGN IN -->
+                <div id="signInPanel">
+                    <div class="panel-title">Welcome <em>back.</em></div>
+                    <p class="panel-sub">Return to the counter. Track orders, rebook a seat, pick up where you left off.</p>
+                    <div class="msg msg-error" id="loginError"></div>
+                    <form id="loginForm" autocomplete="on">
+                        <div class="field">
+                            <label class="field-label">Email<span class="req"> *</span></label>
+                            <input type="email" id="loginEmail" autocomplete="email" required />
+                        </div>
+                        <div class="field">
+                            <label class="field-label">Password<span class="req"> *</span></label>
+                            <input type="password" id="loginPassword" autocomplete="current-password" required />
+                        </div>
+                        <button class="auth-submit" type="submit" id="loginBtn">Sign in →</button>
+                    </form>
+                    <div class="auth-foot">No account yet? <button type="button" onclick="showTab('signup')">Create one</button></div>
+                </div>
+
+                <!-- SIGN UP -->
+                <div id="signUpPanel" style="display:none;">
+                    <div class="panel-title">A new <em>guest.</em></div>
+                    <p class="panel-sub">Register to place orders faster and hold a seat at the counter.</p>
+                    <div class="msg msg-error" id="regError"></div>
+                    <form id="regForm" autocomplete="on">
+                        <div class="two-col">
+                            <div class="field">
+                                <label class="field-label">First name<span class="req"> *</span></label>
+                                <input type="text" id="regFirstName" autocomplete="given-name" required />
                             </div>
-                            <div class="field-group"><label class="field-label">Email Address<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#9993;</span><input type="email" id="regEmail" placeholder="your@email.com" required /></div></div>
-                            <div class="field-group"><label class="field-label">Phone (optional)</label><div class="input-wrap"><span class="input-icon">&#128222;</span><input type="tel" id="regPhone" placeholder="+1 234 567 8900" /></div></div>
-                            <div class="field-group"><label class="field-label">Password<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#128274;</span><input type="password" id="regPassword" placeholder="Create a password" required minlength="6" /></div></div>
-                            <div class="field-group"><label class="field-label">Confirm Password<span class="required">*</span></label><div class="input-wrap"><span class="input-icon">&#128272;</span><input type="password" id="regConfirmPassword" placeholder="Confirm your password" required /></div></div>
-                            <button type="submit" class="primary-btn" id="registerBtn">Create Account</button>
-                        </form>
-                        <div class="switch-text">Already have an account? <button type="button" onclick="showPanel('signin')">Sign in</button></div>
+                            <div class="field">
+                                <label class="field-label">Last name<span class="req"> *</span></label>
+                                <input type="text" id="regLastName" autocomplete="family-name" required />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="field-label">Email<span class="req"> *</span></label>
+                            <input type="email" id="regEmail" autocomplete="email" required />
+                        </div>
+                        <div class="field">
+                            <label class="field-label">Phone (optional)</label>
+                            <input type="tel" id="regPhone" autocomplete="tel" placeholder="+385 ..." />
+                        </div>
+                        <div class="two-col">
+                            <div class="field">
+                                <label class="field-label">Password<span class="req"> *</span></label>
+                                <input type="password" id="regPassword" autocomplete="new-password" minlength="6" required />
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Confirm<span class="req"> *</span></label>
+                                <input type="password" id="regPassword2" autocomplete="new-password" required />
+                            </div>
+                        </div>
+                        <button class="auth-submit" type="submit" id="regBtn">Create account →</button>
+                    </form>
+                    <div class="auth-foot">Already registered? <button type="button" onclick="showTab('signin')">Sign in</button></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: brand -->
+            <div class="auth-right">
+                <div>
+                    <div class="auth-right-kanji">京都</div>
+                    <h2>Fresh flavors, <em>easy ordering.</em></h2>
+                    <p>Sign in to revisit your favorites, or register to move through checkout with less friction.</p>
+
+                    <div class="auth-right-points">
+                        <div class="auth-right-point"><span class="kanji">✓</span><span class="text">Save your favorite dishes for quick reordering.</span></div>
+                        <div class="auth-right-point"><span class="kanji">★</span><span class="text">Track orders and past reservations in one place.</span></div>
+                        <div class="auth-right-point"><span class="kanji">⚡</span><span class="text">Checkout faster with your details ready to go.</span></div>
                     </div>
                 </div>
-                <div class="auth-visual">
-                    <div class="visual-kicker">Kyoto Cuisine</div>
-                    <h2 class="visual-title serif">Fresh flavors, easy ordering.</h2>
-                    <p class="visual-text">Sign in to revisit your favorites, or sign up for a smoother checkout experience.</p>
-                    <div class="visual-points">
-                        <div class="visual-point"><div class="visual-point-icon">&#10003;</div><span>Save your favorite dishes for quick reordering.</span></div>
-                        <div class="visual-point"><div class="visual-point-icon">&#9733;</div><span>Track orders and enjoy a personalized experience.</span></div>
-                        <div class="visual-point"><div class="visual-point-icon">&#9889;</div><span>Checkout faster with your details ready to go.</span></div>
-                    </div>
-                </div>
+                <div class="auth-right-foot">Dubrovnik · Old Town · Est. 二〇二四</div>
             </div>
         </div>
     </div>
-    <script>
-        function showPanel(type) {
-            document.getElementById('signInPanel').classList.toggle('active', type === 'signin');
-            document.getElementById('signUpPanel').classList.toggle('active', type === 'signup');
-        }
-        const session = JSON.parse(localStorage.getItem('kyoto_session') || 'null');
-        if (session && session.token) window.location.href = '/menuView.html';
+</div>
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('loginError');
-            const btn = document.getElementById('loginBtn');
-            errorEl.classList.remove('show');
-            btn.disabled = true; btn.textContent = 'Signing in...';
-            try {
-                const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Login failed');
-                localStorage.setItem('kyoto_session', JSON.stringify(data));
-                window.location.href = '/menuView.html';
-            } catch (err) { errorEl.textContent = err.message; errorEl.classList.add('show'); }
-            finally { btn.disabled = false; btn.textContent = 'Sign In'; }
-        });
+<script src="/assets/ink.js"></script>
+<script>
+document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav();
 
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('registerError');
-            const btn = document.getElementById('registerBtn');
-            errorEl.classList.remove('show');
-            const pw = document.getElementById('regPassword').value;
-            if (pw !== document.getElementById('regConfirmPassword').value) { errorEl.textContent = 'Passwords do not match'; errorEl.classList.add('show'); return; }
-            btn.disabled = true; btn.textContent = 'Creating account...';
-            try {
-                const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ firstName: document.getElementById('regFirstName').value, lastName: document.getElementById('regLastName').value,
-                        email: document.getElementById('regEmail').value, password: pw, phone: document.getElementById('regPhone').value || null })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Registration failed');
-                localStorage.setItem('kyoto_session', JSON.stringify(data));
-                window.location.href = '/menuView.html';
-            } catch (err) { errorEl.textContent = err.message; errorEl.classList.add('show'); }
-            finally { btn.disabled = false; btn.textContent = 'Create Account'; }
+// Already logged in? redirect to wherever came from or home
+const redirect = new URLSearchParams(location.search).get('redirect') || '/';
+const sess = window.kcSession.get();
+if (sess && sess.token) location.href = redirect;
+
+function showTab(which) {
+    const isSignIn = which === 'signin';
+    document.getElementById('tabSignIn').classList.toggle('active', isSignIn);
+    document.getElementById('tabSignUp').classList.toggle('active', !isSignIn);
+    document.getElementById('signInPanel').style.display = isSignIn ? 'block' : 'none';
+    document.getElementById('signUpPanel').style.display = isSignIn ? 'none'  : 'block';
+    document.getElementById('tabLabel').textContent = isSignIn ? 'Welcome back' : 'Join us';
+}
+document.getElementById('tabSignIn').onclick = () => showTab('signin');
+document.getElementById('tabSignUp').onclick = () => showTab('signup');
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    err.classList.remove('show');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            })
         });
-    </script>
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Sign in failed');
+        localStorage.setItem('kyoto_session', JSON.stringify(data));
+        location.href = redirect;
+    } catch (ex) {
+        err.textContent = ex.message; err.classList.add('show');
+    } finally {
+        btn.disabled = false; btn.textContent = 'Sign in →';
+    }
+});
+
+document.getElementById('regForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = document.getElementById('regError');
+    const btn = document.getElementById('regBtn');
+    err.classList.remove('show');
+
+    const pw = document.getElementById('regPassword').value;
+    const pw2 = document.getElementById('regPassword2').value;
+    if (pw !== pw2) { err.textContent = 'Passwords do not match'; err.classList.add('show'); return; }
+
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                email: document.getElementById('regEmail').value,
+                password: pw,
+                phone: document.getElementById('regPhone').value || null
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        localStorage.setItem('kyoto_session', JSON.stringify(data));
+        location.href = redirect;
+    } catch (ex) {
+        err.textContent = ex.message; err.classList.add('show');
+    } finally {
+        btn.disabled = false; btn.textContent = 'Create account →';
+    }
+});
+</script>
 </body>
 </html>

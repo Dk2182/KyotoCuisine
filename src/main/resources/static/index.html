@@ -1,2 +1,842 @@
 <!DOCTYPE html>
-<html><head><meta http-equiv="refresh" content="0;url=/menuView.html" /><title>Kyoto Cuisine</title></head><body></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kyoto Cuisine — Dubrovnik Old Town</title>
+<meta name="description" content="A twelve-seat counter where Kyoto's stillness drifts onto a stone terrace above the Adriatic. Reserve at Kyoto Cuisine, Dubrovnik." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Shippori+Mincho:wght@400;500;700&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/design.css">
+<style>
+/* ================== HERO ================== */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    perspective: 1400px;
+}
+.hero-scene {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 400ms cubic-bezier(.2,.7,.2,1);
+}
+.hero-layer {
+    position: absolute;
+    transition: transform 500ms cubic-bezier(.2,.7,.2,1);
+    will-change: transform;
+}
+.hero-far-mtn    { bottom: 12%; left: -5%; right: -5%; color: var(--ink); opacity: 0.14; }
+.hero-mid-mtn    { bottom: 8%;  left: -10%; right: -10%; color: var(--ink); opacity: 0.35; }
+.hero-wash       { bottom: 4%;  left: 0; right: 0; height: 300px; color: var(--bg); }
+.hero-near-mtn   { bottom: 0;   left: -8%; right: -8%; color: var(--ink); opacity: 0.7; }
+.hero-splash     { top: 18%; right: 8%; color: var(--accent); opacity: 0.88; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
+.hero-splash-jp {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg);
+    font-family: var(--jp);
+    font-size: 28px; font-weight: 700;
+    transform: rotate(-8deg);
+}
+.hero-enso       { top: 26%; left: 6%; color: var(--ink); opacity: 0.5; width: 220px; height: 220px; }
+
+.hero-content {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 48px 180px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+.hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 40px;
+    display: flex; align-items: center; gap: 20px;
+}
+.hero-eyebrow-rule { width: 48px; height: 1px; background: var(--ink-mute); }
+.hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(64px, 11vw, 200px);
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--ink);
+    max-width: 14ch;
+}
+.hero h1 em { font-style: italic; font-weight: 300; }
+.hero-lede-row {
+    display: flex; gap: 80px; align-items: flex-end;
+    margin-top: 64px; flex-wrap: wrap;
+}
+.hero-lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--ink-mute);
+    max-width: 38ch;
+    margin: 0;
+    font-weight: 300;
+}
+.hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-meta {
+    position: absolute;
+    bottom: 48px;
+    left: 48px; right: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+.hero-meta-cols { display: flex; gap: 48px; flex-wrap: wrap; }
+.hero-meta-col .lbl { color: var(--ink-faint); margin-bottom: 6px; font-size: 10px; }
+.hero-meta-jp {
+    font-family: var(--jp);
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    writing-mode: vertical-rl;
+}
+
+/* ================== STORY ================== */
+.story {
+    position: relative;
+    padding: 200px 48px 160px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+.story-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 120px;
+    align-items: start;
+}
+.story h2 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 6vw, 96px);
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--ink);
+}
+.story h2 em { font-style: italic; font-weight: 300; }
+.story-body-grid {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 48px;
+    align-items: start;
+}
+.story-big-kanji {
+    font-family: var(--jp);
+    font-size: 140px;
+    line-height: 0.9;
+    color: var(--ink);
+    writing-mode: vertical-rl;
+    font-weight: 400;
+}
+.story-body {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    font-weight: 300;
+    font-style: italic;
+}
+.story-body p { margin: 0 0 28px; }
+.story-body p:last-child { margin: 0; }
+
+.chef-card {
+    position: relative;
+    aspect-ratio: 4/5;
+    background: var(--ink);
+    color: var(--bg);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+}
+.chef-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(135deg, transparent 0 8px, rgba(241,235,224,0.04) 8px 9px);
+}
+.chef-card-jp {
+    position: absolute;
+    top: 32px; right: 32px;
+    font-family: var(--jp);
+    font-size: 80px;
+    font-weight: 400;
+    opacity: 0.9;
+    line-height: 1;
+    writing-mode: vertical-rl;
+}
+.chef-card-inner { position: relative; z-index: 1; }
+.chef-card-caption { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; }
+.chef-card-name { font-family: var(--serif); font-size: 32px; font-style: italic; font-weight: 300; line-height: 1.1; }
+.chef-card-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; opacity: 0.7; margin-top: 6px; text-transform: uppercase; }
+
+.pull-quote {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 40px 0;
+    position: relative;
+}
+.pull-quote::before {
+    content: "「";
+    position: absolute;
+    top: -14px;
+    left: 0;
+    background: var(--bg);
+    padding: 0 12px 0 0;
+    font-family: var(--jp);
+    font-size: 20px;
+    color: var(--accent);
+}
+.pull-quote p {
+    margin: 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.4;
+    color: var(--ink);
+    font-weight: 300;
+}
+.pull-quote-byline { margin-top: 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mute); }
+
+.ingredients {
+    margin-top: 160px;
+    border-top: 1px solid var(--paper-line);
+    padding-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 48px;
+}
+.ingredient .jp  { font-family: var(--jp); font-size: 56px; font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 20px; }
+.ingredient .lbl { font-family: var(--serif); font-size: 24px; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
+.ingredient .origin { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 4px; }
+.ingredient .note   { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-faint); }
+
+/* ================== MENU SECTION ================== */
+.menu-sec {
+    position: relative;
+    padding: 160px 48px;
+    background: var(--bg-deep);
+    border-top: 1px solid var(--paper-line);
+    border-bottom: 1px solid var(--paper-line);
+}
+.menu-sec-inner { max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
+.menu-headline {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 48px;
+    flex-wrap: wrap;
+    margin-bottom: 72px;
+}
+.menu-headline h2 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 6vw, 96px);
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+    max-width: 14ch;
+}
+.menu-headline h2 em { font-style: italic; font-weight: 300; }
+.menu-legend {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-mute);
+    max-width: 32ch;
+    margin: 0;
+}
+.menu-legend .tag-mini {
+    color: var(--accent);
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+}
+
+.menu-tabs {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 64px;
+}
+.menu-tab {
+    flex: 1;
+    padding: 28px 20px;
+    background: transparent;
+    color: var(--ink);
+    border: none;
+    border-right: 1px solid var(--ink);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all 400ms cubic-bezier(.2,.7,.2,1);
+}
+.menu-tab:last-child { border-right: none; }
+.menu-tab.active { background: var(--ink); color: var(--bg); }
+.menu-tab:not(.active):hover { background: rgba(15,14,12,0.05); }
+.menu-tab .t-jp    { font-family: var(--jp); font-size: 32px; font-weight: 400; line-height: 1; margin-bottom: 8px; }
+.menu-tab .t-label { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
+.menu-tab .t-sub   { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.7; }
+
+.menu-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 80px;
+}
+.menu-item {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--paper-line);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    animation: fadein 500ms both cubic-bezier(.2,.7,.2,1);
+}
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+.menu-item-name-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 6px; }
+.menu-item-name { font-family: var(--serif); font-size: 28px; font-weight: 400; color: var(--ink); }
+.menu-item-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+}
+.menu-item-origin { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-mute); margin-bottom: 4px; }
+.menu-item-note   { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); }
+.menu-item-price  { font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.omakase {
+    margin-top: 96px;
+    padding: 56px 64px;
+    background: var(--ink);
+    color: var(--bg);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 48px;
+}
+.omakase-jp { font-family: var(--jp); font-size: 72px; font-weight: 400; line-height: 0.9; color: var(--accent); }
+.omakase-mid .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; }
+.omakase-mid .title { font-family: var(--serif); font-size: 40px; font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+.omakase-mid .desc  { font-family: var(--serif); font-style: italic; font-size: 16px; opacity: 0.7; max-width: 46ch; }
+.omakase-price { text-align: right; }
+.omakase-price .num { font-family: var(--serif); font-size: 48px; font-weight: 300; }
+.omakase-price .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.6; margin-top: 4px; }
+
+/* Order encouragement CTA under the menu */
+.order-cta-row {
+    margin-top: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+.order-cta-row .lbl { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink-mute); max-width: 42ch; margin: 0; }
+
+/* ================== RESERVE CTA ================== */
+.reserve-cta {
+    position: relative;
+    padding: 180px 48px 160px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+.reserve-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 120px;
+    align-items: center;
+}
+.reserve-cta h2 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 5.5vw, 88px);
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+.reserve-cta h2 em { font-style: italic; font-weight: 300; }
+.reserve-cta p { font-family: var(--serif); font-style: italic; font-size: 20px; line-height: 1.6; color: var(--ink-mute); max-width: 38ch; margin: 40px 0; font-weight: 300; }
+.reserve-cta-right {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 64px;
+    min-height: 460px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 28px;
+    position: relative;
+    overflow: hidden;
+}
+.reserve-cta-right::before {
+    content: "予約";
+    position: absolute;
+    top: -30px; right: -20px;
+    font-family: var(--jp);
+    font-size: 220px;
+    color: rgba(241, 235, 224, 0.06);
+    line-height: 1;
+    font-weight: 400;
+    pointer-events: none;
+}
+.reserve-cta-right .note { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(241,235,224,0.5); }
+.reserve-cta-right .big  { font-family: var(--serif); font-size: 56px; font-weight: 300; line-height: 1.05; margin: 0; }
+.reserve-cta-right .big em { font-style: italic; }
+.reserve-cta-right .sub  { font-family: var(--serif); font-style: italic; font-size: 18px; color: rgba(241,235,224,0.7); max-width: 32ch; margin: 0; }
+
+/* ================== FOOTER ================== */
+.visit {
+    position: relative;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 140px 48px 48px;
+    overflow: hidden;
+}
+.visit-bg-jp {
+    position: absolute;
+    bottom: -80px; right: -40px;
+    font-family: var(--jp);
+    font-size: clamp(240px, 42vw, 560px);
+    font-weight: 400;
+    color: var(--ink-soft);
+    opacity: 0.5;
+    line-height: 0.85;
+    pointer-events: none;
+    user-select: none;
+}
+.visit-inner { max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
+.visit .eyebrow { color: rgba(241,235,224,0.5); }
+.visit .eyebrow-rule { background: rgba(241,235,224,0.5); }
+.visit h2 {
+    font-family: var(--serif);
+    font-size: clamp(56px, 9vw, 160px);
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin: 0 0 96px;
+    max-width: 12ch;
+}
+.visit h2 em { font-style: italic; font-weight: 300; }
+
+.visit-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap: 64px;
+    margin-bottom: 120px;
+}
+.visit-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(241,235,224,0.5);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(241,235,224,0.15);
+}
+.visit-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px dotted rgba(241,235,224,0.1);
+}
+.visit-row.dim { opacity: 0.4; }
+.visit-row .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(241,235,224,0.5); padding-top: 4px; }
+.visit-row .v { font-family: var(--serif); font-size: 17px; font-weight: 300; color: var(--bg); }
+.visit-address { font-family: var(--serif); font-size: 22px; line-height: 1.5; font-weight: 300; }
+.visit-coords { margin-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: rgba(241,235,224,0.6); }
+
+.visit-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 32px;
+    border-top: 1px solid rgba(241,235,224,0.15);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(241,235,224,0.5);
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.visit-bottom .links { display: flex; gap: 32px; }
+.visit-bottom .links a:hover { color: var(--bg); }
+.visit-bottom .kanji { font-family: var(--jp); font-size: 14px; letter-spacing: 0.3em; color: var(--sakura); }
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+    .story-grid, .reserve-cta-grid, .menu-items { grid-template-columns: 1fr; gap: 60px; }
+    .visit-grid { grid-template-columns: repeat(2, 1fr); }
+    .ingredients { grid-template-columns: repeat(2, 1fr); }
+    .omakase { grid-template-columns: 1fr; gap: 24px; }
+    .omakase-price { text-align: left; }
+}
+@media (max-width: 700px) {
+    .hero-content { padding: 120px 24px 160px; }
+    .hero-meta { left: 24px; right: 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
+    .hero-meta-jp { writing-mode: horizontal-tb; }
+    .story, .reserve-cta { padding: 120px 24px; }
+    .menu-sec { padding: 120px 24px; }
+    .visit { padding: 120px 24px 32px; }
+    .visit-grid { grid-template-columns: 1fr; gap: 48px; }
+    .ingredients { grid-template-columns: 1fr; gap: 32px; }
+    .menu-tabs { flex-wrap: wrap; }
+    .menu-tab { flex: 1 1 50%; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+    .reserve-cta-right { padding: 40px; }
+    .story-big-kanji { font-size: 100px; }
+    .story-body { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<canvas id="ink-canvas"></canvas>
+<div id="root">
+
+<!-- NAV injected by JS -->
+<div id="kc-nav-slot"></div>
+
+<!-- ================ HERO ================ -->
+<section class="hero" id="hero">
+    <div class="hero-scene" id="heroScene">
+        <div class="hero-layer hero-far-mtn"  data-depth="0.15">
+            <svg width="1200" height="400" viewBox="0 0 1200 400" preserveAspectRatio="none" style="width:100%;height:auto;">
+                <defs><filter id="mf3" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="25"/><feGaussianBlur stdDeviation="2"/></filter></defs>
+                <g filter="url(#mf3)" fill="currentColor">
+                    <polygon points="0,400 200,180 380,400" opacity="0.45"/>
+                    <polygon points="280,400 520,120 740,400" opacity="0.9"/>
+                    <polygon points="640,400 820,220 1000,400" opacity="0.63"/>
+                    <polygon points="900,400 1080,260 1200,400" opacity="0.36"/>
+                </g>
+            </svg>
+        </div>
+        <div class="hero-layer hero-mid-mtn"  data-depth="0.35">
+            <svg width="1200" height="400" viewBox="0 0 1200 400" preserveAspectRatio="none" style="width:100%;height:auto;">
+                <defs><filter id="mf8" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="8"/><feDisplacementMap in="SourceGraphic" scale="25"/><feGaussianBlur stdDeviation="2"/></filter></defs>
+                <g filter="url(#mf8)" fill="currentColor">
+                    <polygon points="0,400 200,180 380,400" opacity="0.4"/>
+                    <polygon points="280,400 520,120 740,400" opacity="0.85"/>
+                    <polygon points="640,400 820,220 1000,400" opacity="0.59"/>
+                    <polygon points="900,400 1080,260 1200,400" opacity="0.34"/>
+                </g>
+            </svg>
+        </div>
+        <div class="hero-layer hero-wash" data-depth="0.2">
+            <svg width="1800" height="300" viewBox="0 0 1800 300" preserveAspectRatio="none" style="width:100%;height:100%;">
+                <defs>
+                    <filter id="wf21" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="21"/><feDisplacementMap in="SourceGraphic" scale="100"/><feGaussianBlur stdDeviation="14"/></filter>
+                    <radialGradient id="wfg21"><stop offset="0%" stop-color="currentColor" stop-opacity="0.85"/><stop offset="70%" stop-color="currentColor" stop-opacity="0.42"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient>
+                </defs>
+                <ellipse cx="900" cy="150" rx="630" ry="105" fill="url(#wfg21)" filter="url(#wf21)"/>
+            </svg>
+        </div>
+        <div class="hero-layer hero-near-mtn" data-depth="0.6">
+            <svg width="1200" height="400" viewBox="0 0 1200 400" preserveAspectRatio="none" style="width:100%;height:auto;">
+                <defs><filter id="mf14" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="14"/><feDisplacementMap in="SourceGraphic" scale="25"/><feGaussianBlur stdDeviation="2"/></filter></defs>
+                <g filter="url(#mf14)" fill="currentColor">
+                    <polygon points="0,400 200,180 380,400" opacity="0.5"/>
+                    <polygon points="280,400 520,120 740,400" opacity="1"/>
+                    <polygon points="640,400 820,220 1000,400" opacity="0.7"/>
+                    <polygon points="900,400 1080,260 1200,400" opacity="0.4"/>
+                </g>
+            </svg>
+        </div>
+        <div class="hero-layer hero-splash" data-depth="0.8">
+            <svg width="140" height="140" viewBox="0 0 300 300">
+                <defs><filter id="sp42" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="4" seed="42"/><feDisplacementMap in="SourceGraphic" scale="60"/><feGaussianBlur stdDeviation="1.2"/></filter></defs>
+                <g filter="url(#sp42)">
+                    <circle cx="150" cy="150" r="90" fill="currentColor" opacity="0.92"/>
+                    <circle cx="190" cy="120" r="30" fill="currentColor" opacity="0.7"/>
+                    <circle cx="110" cy="190" r="20" fill="currentColor" opacity="0.6"/>
+                </g>
+            </svg>
+            <div class="hero-splash-jp">京都</div>
+        </div>
+        <div class="hero-layer hero-enso" data-depth="0.5">
+            <svg width="220" height="220" viewBox="0 0 200 200">
+                <defs><filter id="en17"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="17"/><feDisplacementMap in="SourceGraphic" scale="6"/></filter></defs>
+                <path d="M 100 20 A 80 80 0 1 1 40 140" stroke="currentColor" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#en17)" opacity="0.8"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="hero-eyebrow-rule"></span>
+            <span>Est. 二〇二四 · Dubrovnik Old Town</span>
+        </div>
+        <h1>Where <em>Kamo</em><br/>meets the <em>Adriatic</em>.</h1>
+        <div class="hero-lede-row">
+            <p class="hero-lede">A twelve-seat counter where Kyoto's stillness drifts onto a stone terrace above the Adriatic. Sushi composed to the rhythm of the tides.</p>
+            <div class="hero-ctas">
+                <a href="/reservation.html" class="btn btn-ink">Reserve a seat</a>
+                <a href="/menuView.html" class="btn btn-ghost">Order now</a>
+            </div>
+        </div>
+        <div class="hero-meta">
+            <div class="hero-meta-cols">
+                <div class="hero-meta-col"><div class="lbl">N 42.641°</div><div>E 18.108°</div></div>
+                <div class="hero-meta-col"><div class="lbl">Chef</div><div>Haruki Tanaka</div></div>
+                <div class="hero-meta-col"><div class="lbl">Seats</div><div>Twelve</div></div>
+            </div>
+            <div class="hero-meta-jp">雅 · 静 · 海</div>
+        </div>
+    </div>
+</section>
+
+<!-- ================ STORY ================ -->
+<section class="story" id="story">
+    <div class="eyebrow reveal"><span>01</span><span class="eyebrow-rule"></span><span>Philosophy</span></div>
+    <div class="story-grid">
+        <div>
+            <h2 class="reveal" data-delay="100">Two seas, <em>one stillness.</em></h2>
+            <div class="story-body-grid reveal" data-delay="300">
+                <div class="story-big-kanji">静</div>
+                <div class="story-body">
+                    <p>In Kyoto, chef Tanaka was taught to listen for the moment rice stops speaking. In Dubrovnik, he found the same silence between waves lapping against stone.</p>
+                    <p>Kyoto Cuisine is a counter of twelve seats where those two silences meet — Hokkaido uni beside Ston oyster, Tsugaru mackerel cured in Pag salt, wasabi grated on Dalmatian stone.</p>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:48px;">
+            <div class="chef-card reveal" data-delay="200">
+                <div class="chef-card-jp">料理人</div>
+                <div class="chef-card-inner">
+                    <div class="chef-card-caption">[ portrait · chef at the counter ]</div>
+                    <div class="chef-card-name">Haruki Tanaka</div>
+                    <div class="chef-card-sub">Kyoto · Dubrovnik</div>
+                </div>
+            </div>
+            <div class="pull-quote reveal" data-delay="400">
+                <p>The fish is already perfect. My work is to step aside.</p>
+                <div class="pull-quote-byline">— Chef Tanaka</div>
+            </div>
+        </div>
+    </div>
+    <div class="ingredients reveal" data-delay="500">
+        <div class="ingredient"><div class="jp">米</div><div class="lbl">Rice</div><div class="origin">Niigata · Koshihikari</div><div class="note">Aged 90 days</div></div>
+        <div class="ingredient"><div class="jp">塩</div><div class="lbl">Salt</div><div class="origin">Ston · Adriatic flakes</div><div class="note">Hand-harvested</div></div>
+        <div class="ingredient"><div class="jp">魚</div><div class="lbl">Fish</div><div class="origin">Toyosu &amp; Komiža</div><div class="note">Daily at dawn</div></div>
+        <div class="ingredient"><div class="jp">油</div><div class="lbl">Oil</div><div class="origin">Korčula · Oblica</div><div class="note">Cold-pressed</div></div>
+    </div>
+</section>
+
+<!-- ================ MENU ================ -->
+<section class="menu-sec" id="menu">
+    <div class="menu-sec-inner">
+        <div class="eyebrow reveal"><span>02</span><span class="eyebrow-rule"></span><span>The Menu · お品書き</span></div>
+        <div class="menu-headline reveal" data-delay="100">
+            <h2>Composed in <em>four movements.</em></h2>
+            <p class="menu-legend">The omakase shifts with tide and season. Prices in euro. Dishes marked <span class="tag-mini">◇ DALMATIA</span> source from within 100 km.</p>
+        </div>
+        <div class="menu-tabs reveal" data-delay="200" id="menuTabs"></div>
+        <div class="menu-items" id="menuItems"></div>
+
+        <div class="omakase reveal" data-delay="200">
+            <div class="omakase-jp">お任せ</div>
+            <div class="omakase-mid">
+                <div class="lbl">Chef's counter · 19 courses</div>
+                <div class="title">Omakase at dusk</div>
+                <div class="desc">The full journey. Chef decides; the sea decides. Seven at the counter, only. Two hours and a half.</div>
+            </div>
+            <div class="omakase-price"><div class="num">€180</div><div class="sub">per guest</div></div>
+        </div>
+
+        <div class="order-cta-row reveal" data-delay="300">
+            <p class="lbl">Ready to order for pickup or in-room dining? Step through the full ordering menu.</p>
+            <a href="/menuView.html" class="btn btn-ink">Open the ordering menu</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================ RESERVE CTA ================ -->
+<section class="reserve-cta" id="reserve">
+    <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations · 予約</span></div>
+    <div class="reserve-cta-grid">
+        <div class="reveal">
+            <h2>Twelve seats. <em>Two services.</em></h2>
+            <p>Hold a seat at the counter, or a table on the stone terrace. We confirm within the day by message.</p>
+            <a href="/reservation.html" class="btn btn-ink">Begin your reservation</a>
+        </div>
+        <div class="reserve-cta-right reveal" data-delay="200">
+            <div class="note">予約 · Reservation</div>
+            <div class="big">Seal your <em>seat</em> at the counter.</div>
+            <div class="sub">Four quiet questions — party, date, guest, note for chef. Thirty seconds.</div>
+            <a href="/reservation.html" class="btn btn-accent">Begin →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================ FOOTER / VISIT ================ -->
+<footer class="visit" id="visit">
+    <div class="visit-bg-jp">京都</div>
+    <div class="visit-inner">
+        <div class="eyebrow reveal"><span>04</span><span class="eyebrow-rule"></span><span>Visit</span></div>
+        <h2 class="reveal">Inside the <em>old walls.</em></h2>
+        <div class="visit-grid">
+            <div>
+                <div class="visit-label">Address</div>
+                <div class="visit-address">Ulica od Puča 123<br/>20000 Dubrovnik<br/>Croatia</div>
+                <div class="visit-coords">N 42.641° · E 18.108°</div>
+            </div>
+            <div>
+                <div class="visit-label">Hours</div>
+                <div class="visit-row"><span class="k">Mon – Thu</span><span class="v">11:00 – 22:00</span></div>
+                <div class="visit-row"><span class="k">Fri – Sat</span><span class="v">11:00 – 23:00</span></div>
+                <div class="visit-row"><span class="k">Sunday</span><span class="v">12:00 – 21:00</span></div>
+            </div>
+            <div>
+                <div class="visit-label">Speak</div>
+                <div class="visit-row"><span class="k">Reserve</span><span class="v">+385 20 123 4567</span></div>
+                <div class="visit-row"><span class="k">Email</span><span class="v">hello@kyotocuisine.hr</span></div>
+                <div class="visit-row"><span class="k">Press</span><span class="v">press@kyotocuisine.hr</span></div>
+            </div>
+            <div>
+                <div class="visit-label">Follow</div>
+                <div class="visit-row"><span class="k">Instagram</span><span class="v">@kyotocuisine</span></div>
+                <div class="visit-row"><span class="k">Journal</span><span class="v">Dispatches, seasonally</span></div>
+                <div style="margin-top:20px;">
+                    <a href="/reservation.html" class="btn btn-accent btn-small">Reserve a table →</a>
+                </div>
+            </div>
+        </div>
+        <div class="visit-bottom">
+            <div>© 二〇二四 Kyoto Cuisine · Dubrovnik</div>
+            <div class="links">
+                <a>Privacy</a><a>Allergens</a><a>Private dining</a>
+            </div>
+            <div class="kanji">一期一会</div>
+        </div>
+    </div>
+</footer>
+
+</div>
+<script src="/assets/ink.js"></script>
+<script>
+// ================ NAV ================
+document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Home');
+
+// ================ HERO PARALLAX ================
+(function () {
+    let tiltX = 0, tiltY = 0, scrollY = 0;
+    const scene = document.getElementById('heroScene');
+    const layers = document.querySelectorAll('.hero-layer');
+    function applyTransforms() {
+        if (!scene) return;
+        scene.style.transform = `rotateY(${tiltX * 2}deg) rotateX(${-tiltY * 2}deg)`;
+        layers.forEach(el => {
+            const d = parseFloat(el.dataset.depth || 0);
+            const tx = -tiltX * d * 20;
+            const ty = -tiltY * d * 15 + scrollY * d * 0.3;
+            el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+        });
+    }
+    window.addEventListener('mousemove', (e) => {
+        const w = window.innerWidth, h = window.innerHeight;
+        tiltX = (e.clientX / w - 0.5) * 2;
+        tiltY = (e.clientY / h - 0.5) * 2;
+        applyTransforms();
+    }, { passive: true });
+    window.addEventListener('scroll', () => {
+        scrollY = window.scrollY;
+        applyTransforms();
+    }, { passive: true });
+    applyTransforms();
+})();
+
+// ================ MENU TABS ================
+const MENU_DATA = {
+    nigiri: { jp: "握り", label: "Nigiri", sub: "Edomae technique · Dalmatian provenance", items: [
+        { name: "Otoro", origin: "Toyosu bluefin belly", price: 18, note: "aged 9 days" },
+        { name: "Hamachi", origin: "Adriatic amberjack", price: 12, note: "lightly seared" },
+        { name: "Uni", origin: "Hokkaido · Rausu", price: 22, note: "shiso · yuzu zest" },
+        { name: "Ston Oyster", origin: "Mali Ston bay", price: 14, note: "ponzu · wasabi", tag: "Dalmatia" },
+        { name: "Sardela", origin: "Komiža · Vis", price: 9, note: "ginger pickle", tag: "Dalmatia" },
+        { name: "Tai", origin: "Akashi sea bream", price: 11, note: "kombu-cured" },
+    ]},
+    sashimi: { jp: "刺身", label: "Sashimi", sub: "Single-cut · no adornment", items: [
+        { name: "Tuna trilogy", origin: "akami · chutoro · otoro", price: 42, note: "nine pieces" },
+        { name: "Adriatic flounder", origin: "iverak · Pelješac", price: 28, note: "five pieces", tag: "Dalmatia" },
+        { name: "Hokkaido scallop", origin: "hotate", price: 32, note: "with Pag salt", tag: "Fusion" },
+        { name: "Seasonal white fish", origin: "chef's selection", price: 36, note: "seven pieces" },
+    ]},
+    maki: { jp: "巻", label: "Maki", sub: "Rolled by hand at the counter", items: [
+        { name: "Negitoro", origin: "toro · chive", price: 16, note: "hosomaki, 8 pieces" },
+        { name: "Kani Dalmata", origin: "Dalmatian crab · umeboshi", price: 19, note: "futomaki, 6 pieces", tag: "Fusion" },
+        { name: "Unagi ura", origin: "eel · avocado · sesame", price: 22, note: "uramaki, 8 pieces" },
+        { name: "Anchovy & truffle", origin: "Komiža anchovy · Istrian truffle", price: 24, note: "futomaki, 6 pieces", tag: "Fusion" },
+    ]},
+    hot: { jp: "温物", label: "Hot Dishes", sub: "From the charcoal · from the broth", items: [
+        { name: "Wagyu tataki", origin: "A5 Miyazaki · flaked salt", price: 48, note: "binchotan seared" },
+        { name: "Miso black cod", origin: "42-hour marinade", price: 38, note: "pickled ginger" },
+        { name: "Brodet tempura", origin: "Adriatic rockfish broth", price: 26, note: "seasonal vegetables", tag: "Fusion" },
+        { name: "Agedashi tofu", origin: "Kyoto silken", price: 14, note: "dashi · scallion" },
+        { name: "Ochazuke", origin: "rice · green tea · salmon", price: 16, note: "to close the meal" },
+    ]},
+};
+let activeTab = 'nigiri';
+function renderMenu() {
+    const tabsEl = document.getElementById('menuTabs');
+    tabsEl.innerHTML = Object.entries(MENU_DATA).map(([k, c]) => `
+        <button class="menu-tab ${k === activeTab ? 'active' : ''}" data-key="${k}">
+            <div class="t-jp">${c.jp}</div>
+            <div class="t-label">${c.label}</div>
+            <div class="t-sub">${c.sub}</div>
+        </button>
+    `).join('');
+    tabsEl.querySelectorAll('.menu-tab').forEach(btn => {
+        btn.onclick = () => { activeTab = btn.dataset.key; renderMenu(); };
+    });
+    const current = MENU_DATA[activeTab];
+    document.getElementById('menuItems').innerHTML = current.items.map((it, i) => `
+        <div class="menu-item" style="animation-delay: ${i * 60}ms">
+            <div>
+                <div class="menu-item-name-row">
+                    <div class="menu-item-name">${it.name}</div>
+                    ${it.tag ? `<div class="menu-item-tag">◇ ${it.tag}</div>` : ''}
+                </div>
+                <div class="menu-item-origin">${it.origin}</div>
+                <div class="menu-item-note">${it.note}</div>
+            </div>
+            <div class="menu-item-price">€${it.price}</div>
+        </div>
+    `).join('');
+}
+renderMenu();
+</script>
+</body>
+</html>

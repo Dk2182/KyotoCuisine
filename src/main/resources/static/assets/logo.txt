@@ -1,0 +1,1 @@
+Replace this file with logo.png. The HTML references /assets/logo.png — once you drop a real PNG here with that name, it will appear automatically.

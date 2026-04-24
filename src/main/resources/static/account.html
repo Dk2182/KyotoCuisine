@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My account — Kyoto Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/design.css">
+<style>
+.page { padding: 160px 48px 120px; max-width: 1400px; margin: 0 auto; }
+.hero-block { display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; flex-wrap: wrap; margin-bottom: 72px; padding-bottom: 32px; border-bottom: 1px solid var(--ink); }
+.hero-block h1 {
+    font-family: var(--serif);
+    font-size: clamp(44px, 5vw, 76px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 12px 0 4px;
+}
+.hero-block h1 em { font-style: italic; font-weight: 300; }
+.hero-block .sub { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-mute); }
+.hero-block .me  {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 14px 22px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: start;
+}
+
+.section-title { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-mute); }
+.section-title .jp { font-family: var(--jp); font-size: 28px; color: var(--ink); letter-spacing: 0; text-transform: none; line-height: 1; }
+
+.item {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--paper-line);
+}
+.item:last-child { border-bottom: none; }
+.item-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+    gap: 16px;
+}
+.item-title { font-family: var(--serif); font-size: 20px; font-weight: 400; }
+.item-date { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint); }
+.item-body { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-mute); }
+.item-foot {
+    margin-top: 10px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px;
+}
+.item-total { font-family: var(--serif); font-size: 20px; font-weight: 400; color: var(--ink); }
+
+.empty {
+    padding: 48px 24px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-mute);
+    text-align: center;
+    border: 1px dashed var(--paper-line);
+}
+.empty a { color: var(--accent); font-style: normal; text-decoration: underline; }
+
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; gap: 64px; } }
+@media (max-width: 600px) { .page { padding: 120px 24px 60px; } }
+</style>
+</head>
+<body>
+<canvas id="ink-canvas"></canvas>
+<div id="root">
+    <div id="kc-nav-slot"></div>
+
+    <div class="page">
+        <div class="eyebrow reveal"><span>04</span><span class="eyebrow-rule"></span><span>My account · 御客様</span></div>
+
+        <div class="hero-block reveal" data-delay="100">
+            <div>
+                <div class="sub" id="greet">Welcome back.</div>
+                <h1 id="fullName">—</h1>
+                <div class="sub" id="userEmail">—</div>
+            </div>
+            <button class="me" onclick="signOut()">Sign out →</button>
+        </div>
+
+        <div class="grid-2">
+            <div class="reveal" data-delay="150">
+                <div class="section-title"><span class="jp">注文</span><span class="eyebrow-rule"></span><span>Past orders</span></div>
+                <div id="ordersList"><div class="empty">Loading…</div></div>
+            </div>
+            <div class="reveal" data-delay="250">
+                <div class="section-title"><span class="jp">予約</span><span class="eyebrow-rule"></span><span>Reservations</span></div>
+                <div id="resList"><div class="empty">Loading…</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/ink.js"></script>
+<script>
+document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Account');
+
+const session = window.kcSession.get();
+if (!session || !session.token) location.href = '/login.html?redirect=/account.html';
+
+document.getElementById('fullName').textContent = (session.firstName || '') + ' ' + (session.lastName || '');
+document.getElementById('userEmail').textContent = session.email || '';
+
+function signOut() {
+    if (!confirm('Sign out?')) return;
+    window.kcSession.clear();
+    location.href = '/';
+}
+
+function formatPrice(v) { return '€' + Number(v).toFixed(2); }
+function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }); }
+function fmtTime(iso) { return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+
+async function loadOrders() {
+    const el = document.getElementById('ordersList');
+    try {
+        const res = await fetch('/api/orders', { headers: { 'Authorization': session.token } });
+        if (!res.ok) throw new Error('not authenticated');
+        const orders = await res.json();
+        if (!orders.length) { el.innerHTML = `<div class="empty">No orders yet. <a href="/menuView.html">Open the menu</a> to begin.</div>`; return; }
+        el.innerHTML = orders.map(o => {
+            const items = (o.items || []).map(i => `${i.itemName} × ${i.quantity}`).join(' · ') || '—';
+            return `<div class="item">
+                <div class="item-head"><span class="item-title">Order #${o.orderId}</span><span class="item-date">${fmtDate(o.placedAt)}</span></div>
+                <div class="item-body">${items}</div>
+                <div class="item-foot">
+                    <span class="badge ${o.statusName}">${o.statusName.replace('_',' ')}</span>
+                    <span class="item-total">${formatPrice(o.totalAmount)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    } catch (e) { el.innerHTML = `<div class="empty">Could not load orders.</div>`; }
+}
+
+async function loadReservations() {
+    const el = document.getElementById('resList');
+    try {
+        const res = await fetch('/api/reservations', { headers: { 'Authorization': session.token } });
+        if (!res.ok) throw new Error('not authenticated');
+        const list = await res.json();
+        if (!list.length) { el.innerHTML = `<div class="empty">No reservations yet. <a href="/reservation.html">Book a seat</a>.</div>`; return; }
+        el.innerHTML = list.map(r => `
+            <div class="item">
+                <div class="item-head"><span class="item-title">Reservation #${r.reservationId}</span><span class="item-date">${fmtDate(r.reservationStart)} · ${fmtTime(r.reservationStart)}</span></div>
+                <div class="item-body">${r.guestCount} ${r.guestCount === 1 ? 'guest' : 'guests'} · table ${r.tableLabel}${r.specialRequest ? ' · ' + r.specialRequest : ''}</div>
+                <div class="item-foot">
+                    <span class="badge ${r.statusName}">${r.statusName}</span>
+                    ${(r.statusName === 'PENDING' || r.statusName === 'CONFIRMED') ? `<button onclick="cancelRes(${r.reservationId})" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:6px 14px;font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;cursor:pointer;">Cancel</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    } catch (e) { el.innerHTML = `<div class="empty">Could not load reservations.</div>`; }
+}
+
+async function cancelRes(id) {
+    if (!confirm('Cancel this reservation?')) return;
+    try {
+        await fetch('/api/reservations/' + id, { method: 'DELETE', headers: { 'Authorization': session.token } });
+        loadReservations();
+    } catch (e) { alert('Could not cancel.'); }
+}
+window.cancelRes = cancelRes;
+
+loadOrders();
+loadReservations();
+</script>
+</body>
+</html>

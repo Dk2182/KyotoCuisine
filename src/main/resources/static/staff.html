@@ -1,141 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kyoto Cuisine - Staff Dashboard</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; background: #f4f1ee; color: #2f2a28; }
-        .serif { font-family: Georgia, "Times New Roman", serif; }
-        .topbar { background: #fbfaf8; border-bottom: 1px solid #e4ddd7; padding: 14px 28px; }
-        .topbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-        .brand-icon { width: 38px; height: 38px; border-radius: 50%; background: #cf544c; position: relative; flex-shrink: 0; }
-        .brand-icon::after { content: ""; position: absolute; inset: 9px; border: 2px solid #fff; border-radius: 50%; }
-        .brand-name { font-size: 20px; font-weight: 700; }
-        .brand-subtitle { margin-top: 4px; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #8f8882; }
-        .nav-links { display: flex; align-items: center; gap: 6px; }
-        .nav-link { border: 1px solid #e4ddd7; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; text-decoration: none; transition: 0.2s; white-space: nowrap; }
-        .nav-link:hover { background: #f4f1ee; }
-        .nav-link.active { background: #cf544c; color: #fff; border-color: #cf544c; }
-        .topbar-actions { display: flex; align-items: center; gap: 12px; }
-        .user-btn { border: 1px solid #d8d0ca; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
-        .hero { background: #fbfaf8; border-bottom: 1px solid #e7dfd9; text-align: center; padding: 40px 20px 24px; }
-        .hero h1 { font-size: 48px; color: #332d2a; margin-bottom: 8px; }
-        .hero p { color: #8a847e; font-size: 15px; }
-        .refresh-info { display: inline-block; background: #e0e7ff; color: #3730a3; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-top: 12px; }
-        .content { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
-        /* Order cards */
-        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-        .order-card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 18px; padding: 20px; }
-        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .order-id { font-size: 18px; font-weight: 700; color: #332d2a; }
-        .order-meta { font-size: 12px; color: #8a847e; margin-top: 2px; }
-        .status-badge { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
-        .status-badge.NOT_PREPARING { background: #fee2e2; color: #b91c1c; }
-        .status-badge.PREPARING { background: #fef3c7; color: #92400e; }
-        .status-badge.READY { background: #dcfce7; color: #166534; }
-        .status-badge.COMPLETED { background: #e0e7ff; color: #3730a3; }
-        .order-items-list { list-style: none; margin-bottom: 14px; }
-        .order-items-list li { padding: 6px 0; border-bottom: 1px solid #f0ece8; font-size: 14px; color: #5f5854; display: flex; justify-content: space-between; }
-        .order-items-list li:last-child { border-bottom: none; }
-        .order-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #332d2a; padding-top: 10px; border-top: 1px solid #e7ddd6; margin-bottom: 14px; }
-        .order-total span:last-child { color: #cf544c; }
-        .order-notes { background: #f8f5f2; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #6b625d; margin-bottom: 14px; }
-        .advance-btn { width: 100%; border: none; border-radius: 12px; background: #cf544c; color: #fff; padding: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .advance-btn:hover { opacity: 0.92; }
-        .advance-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .advance-btn.ready { background: #16a34a; }
-        .empty-state { text-align: center; color: #8a847e; padding: 60px 20px; font-size: 16px; }
-        @media (max-width: 768px) { .orders-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 36px; } }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Staff — Kyoto Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/design.css">
+<style>
+.page { padding: 140px 48px 100px; max-width: 1600px; margin: 0 auto; }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--ink); }
+.page-head h1 { font-family: var(--serif); font-size: clamp(44px, 5vw, 76px); font-weight: 300; line-height: 1; margin: 12px 0 0; }
+.page-head h1 em { font-style: italic; }
+.page-head .sub { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-mute); margin-top: 8px; }
+.page-head .refresh-tag {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+    border: 1px solid var(--paper-line); padding: 10px 18px; color: var(--ink-mute);
+}
+
+.orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+.order-card { border: 1px solid var(--paper-line); padding: 24px; background: var(--bg); position: relative; transition: border-color 200ms; }
+.order-card:hover { border-color: var(--ink); }
+.order-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 16px; }
+.order-id { font-family: var(--serif); font-size: 28px; font-weight: 400; }
+.order-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); margin-top: 4px; }
+.order-items { list-style: none; padding: 0; margin: 0 0 16px; font-family: var(--serif); font-size: 16px; }
+.order-items li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--paper-line); color: var(--ink-soft); }
+.order-items li:last-child { border-bottom: none; }
+.order-total { display: flex; justify-content: space-between; font-family: var(--serif); font-size: 20px; padding-top: 10px; border-top: 1px solid var(--ink); margin-bottom: 14px; }
+.order-total .num { color: var(--accent); }
+.order-notes { background: rgba(15, 14, 12, 0.04); border-left: 2px solid var(--paper-line); padding: 10px 14px; font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-mute); margin-bottom: 14px; }
+.advance-btn {
+    width: 100%; padding: 14px;
+    background: var(--ink); color: var(--bg); border: none;
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    cursor: pointer; transition: all 300ms;
+}
+.advance-btn:hover { background: var(--accent); }
+.advance-btn.ready { background: var(--gold); }
+.advance-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.empty {
+    border: 1px dashed var(--paper-line);
+    padding: 60px 20px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    text-align: center;
+    color: var(--ink-mute);
+    grid-column: 1 / -1;
+}
+@media (max-width: 600px) { .page { padding: 120px 24px 60px; } }
+</style>
 </head>
 <body>
-    <header class="topbar">
-        <div class="topbar-inner">
-            <a class="brand" href="/menuView.html"><div class="brand-icon"></div><div><div class="brand-name">Kyoto Cuisine</div><div class="brand-subtitle">Japanese Restaurant</div></div></a>
-            <div class="nav-links" id="navLinks"></div>
-            <div class="topbar-actions"><button class="user-btn" id="userBtn">Login</button></div>
+<canvas id="ink-canvas"></canvas>
+<div id="root">
+    <div id="kc-nav-slot"></div>
+
+    <div class="page">
+        <div class="page-head">
+            <div>
+                <div class="eyebrow"><span class="jp" style="font-family:var(--jp); font-size:28px; letter-spacing:0; text-transform:none;">板場</span><span class="eyebrow-rule"></span><span>Staff · Active orders</span></div>
+                <h1>The <em>counter</em>.</h1>
+                <div class="sub">Live orders. Advance each through the stages as the dish moves.</div>
+            </div>
+            <div class="refresh-tag">Auto-refresh · every 20s</div>
         </div>
-    </header>
-    <section class="hero">
-        <h1 class="serif">Staff Dashboard</h1>
-        <p>Manage active orders and update preparation status</p>
-        <div class="refresh-info" id="refreshInfo">Auto-refreshes every 20 seconds</div>
-    </section>
-    <div class="content">
-        <div class="orders-grid" id="ordersGrid"><div class="empty-state">Loading orders...</div></div>
+
+        <div class="orders-grid" id="ordersGrid"><div class="empty">Loading orders...</div></div>
     </div>
+</div>
 
-    <script>
-        function getSession() { return JSON.parse(localStorage.getItem('kyoto_session') || 'null'); }
-        const session = getSession();
-        if (!session || !session.token || (session.role !== 'STAFF' && session.role !== 'ADMIN')) {
-            alert('Access denied. Staff or Admin role required.');
-            window.location.href = '/login.html';
-        }
+<script src="/assets/ink.js"></script>
+<script>
+document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Staff');
 
-        function buildNav() {
-            const nav = document.getElementById('navLinks');
-            const userBtn = document.getElementById('userBtn');
-            let links = '<a class="nav-link" href="/menuView.html">Menu</a>';
-            links += '<a class="nav-link" href="/reservation.html">Reservations</a>';
-            links += '<a class="nav-link active" href="/staff.html">Staff</a>';
-            if (session.role === 'ADMIN') links += '<a class="nav-link" href="/admin.html">Admin</a>';
-            nav.innerHTML = links;
-            userBtn.textContent = session.firstName || 'Staff';
-            userBtn.onclick = () => { if (confirm('Sign out?')) { localStorage.removeItem('kyoto_session'); location.reload(); }};
-        }
+const session = window.kcSession.get();
+if (!session || !session.token || (session.role !== 'STAFF' && session.role !== 'ADMIN')) {
+    alert('Access denied — staff or admin only.');
+    location.href = '/login.html?redirect=/staff.html';
+}
 
-        function formatPrice(v) { return '$' + parseFloat(v).toFixed(2); }
-        function formatTime(dt) { return new Date(dt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+function formatPrice(v) { return '€' + Number(v).toFixed(2); }
+function fmtTime(iso) { return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
 
-        const nextStatus = { 'NOT_PREPARING': 'Start Preparing', 'PREPARING': 'Mark Ready', 'READY': 'Complete Order' };
-        const nextStatusClass = { 'NOT_PREPARING': '', 'PREPARING': '', 'READY': 'ready' };
+const NEXT_LABEL = { NOT_PREPARING: 'Start preparing', PREPARING: 'Mark ready', READY: 'Complete order' };
 
-        async function loadOrders() {
-            try {
-                const res = await fetch('/api/staff/orders', { headers: { 'Authorization': session.token } });
-                if (!res.ok) throw new Error('Access denied');
-                const orders = await res.json();
-                const grid = document.getElementById('ordersGrid');
-                if (orders.length === 0) { grid.innerHTML = '<div class="empty-state">No active orders right now.</div>'; return; }
-                grid.innerHTML = orders.map(o => {
-                    const items = o.items || [];
-                    const btnText = nextStatus[o.statusName] || '';
-                    const btnClass = nextStatusClass[o.statusName] || '';
-                    return `<div class="order-card">
-                        <div class="order-header">
-                            <div><div class="order-id">Order #${o.orderId}</div><div class="order-meta">${o.customerName || 'Guest'} &middot; ${formatTime(o.placedAt)} &middot; ${o.orderType}</div></div>
-                            <span class="status-badge ${o.statusName}">${o.statusName.replace('_', ' ')}</span>
-                        </div>
-                        <ul class="order-items-list">
-                            ${items.map(i => `<li><span>${i.itemName} x${i.quantity}</span><span>${formatPrice(i.lineTotal)}</span></li>`).join('')}
-                        </ul>
-                        <div class="order-total"><span>Total</span><span>${formatPrice(o.totalAmount)}</span></div>
-                        ${o.notes ? `<div class="order-notes">Note: ${o.notes}</div>` : ''}
-                        ${btnText ? `<button class="advance-btn ${btnClass}" onclick="advanceOrder(${o.orderId}, this)">${btnText}</button>` : ''}
-                    </div>`;
-                }).join('');
-            } catch (e) { console.error(e); }
-        }
+async function loadOrders() {
+    try {
+        const res = await fetch('/api/staff/orders', { headers: { 'Authorization': session.token } });
+        if (!res.ok) throw new Error('Access denied');
+        const orders = await res.json();
+        const grid = document.getElementById('ordersGrid');
+        if (!orders.length) { grid.innerHTML = '<div class="empty">No active orders. Quiet counter.</div>'; return; }
+        grid.innerHTML = orders.map(o => {
+            const items = (o.items || []).map(i => `<li><span>${i.itemName} × ${i.quantity}</span><span>${formatPrice(i.lineTotal)}</span></li>`).join('');
+            const next = NEXT_LABEL[o.statusName];
+            return `<div class="order-card">
+                <div class="order-top">
+                    <div>
+                        <div class="order-id">#${o.orderId}</div>
+                        <div class="order-meta">${o.customerName || 'Guest'} · ${fmtTime(o.placedAt)} · ${o.orderType}</div>
+                    </div>
+                    <span class="badge ${o.statusName}">${o.statusName.replace('_',' ')}</span>
+                </div>
+                <ul class="order-items">${items}</ul>
+                <div class="order-total"><span>Total</span><span class="num">${formatPrice(o.totalAmount)}</span></div>
+                ${o.notes ? `<div class="order-notes">Note: ${o.notes}</div>` : ''}
+                ${next ? `<button class="advance-btn ${o.statusName === 'PREPARING' ? 'ready' : ''}" data-advance="${o.orderId}">${next} →</button>` : ''}
+            </div>`;
+        }).join('');
+        grid.querySelectorAll('[data-advance]').forEach(btn => btn.onclick = () => advance(Number(btn.dataset.advance), btn));
+    } catch (e) { console.error(e); }
+}
 
-        async function advanceOrder(id, btn) {
-            btn.disabled = true;
-            btn.textContent = 'Updating...';
-            try {
-                const res = await fetch('/api/staff/orders/' + id + '/advance', {
-                    method: 'PUT', headers: { 'Authorization': session.token }
-                });
-                if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
-                loadOrders();
-            } catch (e) { alert(e.message); btn.disabled = false; }
-        }
-
-        buildNav();
+async function advance(id, btn) {
+    btn.disabled = true; btn.textContent = 'Advancing...';
+    try {
+        const res = await fetch('/api/staff/orders/' + id + '/advance', { method: 'PUT', headers: { 'Authorization': session.token } });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
         loadOrders();
-        setInterval(loadOrders, 20000);
-    </script>
+    } catch (e) { alert(e.message); btn.disabled = false; }
+}
+
+loadOrders();
+setInterval(loadOrders, 20000);
+</script>
 </body>
 </html>

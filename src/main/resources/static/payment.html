@@ -1,241 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kyoto Cuisine - Checkout</title>
-    <script src="https://js.stripe.com/v3/"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; background: #f4f1ee; color: #2f2a28; }
-        .serif { font-family: Georgia, "Times New Roman", serif; }
-        .topbar { background: #fbfaf8; border-bottom: 1px solid #e4ddd7; padding: 14px 28px; }
-        .topbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-        .brand-icon { width: 38px; height: 38px; border-radius: 50%; background: #cf544c; position: relative; flex-shrink: 0; }
-        .brand-icon::after { content: ""; position: absolute; inset: 9px; border: 2px solid #fff; border-radius: 50%; }
-        .brand-name { font-size: 20px; font-weight: 700; }
-        .brand-subtitle { margin-top: 4px; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #8f8882; }
-        .back-btn { border: 1px solid #d8d0ca; background: #fff; color: #433d39; border-radius: 12px; padding: 10px 16px; font-size: 14px; cursor: pointer; text-decoration: none; }
-        .back-btn:hover { background: #f4f1ee; }
-        .checkout-container { max-width: 960px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .section-card { background: #fbfaf8; border: 1px solid #eadfd7; border-radius: 20px; padding: 28px; }
-        .section-title { font-size: 24px; color: #332d2a; margin-bottom: 20px; }
-        /* Order summary */
-        .order-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid #ece2db; }
-        .order-item:last-child { border-bottom: none; }
-        .order-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
-        .order-item-info { flex: 1; }
-        .order-item-name { font-size: 15px; font-weight: 600; color: #332d2a; }
-        .order-item-qty { font-size: 13px; color: #8a847e; margin-top: 2px; }
-        .order-item-price { font-size: 15px; font-weight: 700; color: #cf544c; white-space: nowrap; }
-        .summary-divider { height: 1px; background: #e7ddd6; margin: 16px 0; }
-        .summary-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 15px; color: #4a4440; }
-        .summary-line.total { font-size: 20px; font-weight: 700; color: #332d2a; padding-top: 12px; }
-        .summary-line.total span:last-child { color: #cf544c; }
-        .tax-note { font-size: 12px; color: #9a938d; text-align: right; margin-top: 4px; }
-        /* Payment form */
-        .field-group { margin-bottom: 18px; }
-        .field-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #3f3835; }
-        #card-element { background: #f2eeea; border: 1px solid transparent; border-radius: 14px; padding: 16px; transition: 0.2s; }
-        #card-element.StripeElement--focus { border-color: #d9b4af; background: #fff; }
-        #card-errors { color: #b91c1c; font-size: 13px; margin-top: 8px; min-height: 20px; }
-        .pay-btn { width: 100%; border: none; border-radius: 16px; background: #cf544c; color: #fff; padding: 16px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 20px; box-shadow: 0 10px 22px rgba(207,84,76,0.18); transition: 0.2s; }
-        .pay-btn:hover { opacity: 0.92; }
-        .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        /* Success overlay */
-        .success-overlay { display: none; position: fixed; inset: 0; background: rgba(37,29,25,0.5); z-index: 100; align-items: center; justify-content: center; }
-        .success-overlay.show { display: flex; }
-        .success-card { background: #fbfaf8; border-radius: 24px; padding: 48px 36px; text-align: center; max-width: 420px; width: 90%; }
-        .success-icon { width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; color: #16a34a; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        .success-title { font-size: 28px; color: #332d2a; margin-bottom: 10px; }
-        .success-text { color: #8a847e; font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
-        .success-btn { border: none; border-radius: 14px; background: #cf544c; color: #fff; padding: 14px 28px; font-size: 16px; font-weight: 700; cursor: pointer; }
-        .order-type-wrap { display: flex; gap: 10px; margin-bottom: 20px; }
-        .order-type-btn { flex: 1; border: 1px solid #e4ddd7; background: #fff; color: #433d39; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
-        .order-type-btn.active { background: #cf544c; color: #fff; border-color: #cf544c; }
-        .notes-input { width: 100%; border: 1px solid transparent; background: #f2eeea; border-radius: 14px; padding: 14px; font-size: 14px; color: #3d3734; outline: none; resize: vertical; min-height: 60px; font-family: inherit; }
-        .notes-input:focus { border-color: #d9b4af; background: #fff; }
-        /* Test card info box */
-        .test-card-note { background: #fef6e4; border: 1px solid #f0d591; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
-        .test-card-title { font-size: 13px; font-weight: 700; color: #7a5a0e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-        .test-card-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; color: #5f5854; gap: 12px; }
-        .test-card-row span { color: #8a847e; }
-        .test-card-row code { background: #fff; border: 1px solid #eadfd7; border-radius: 6px; padding: 3px 8px; font-family: "Courier New", monospace; font-size: 13px; color: #332d2a; font-weight: 600; user-select: all; }
-        .test-card-footer { margin-top: 10px; font-size: 11px; color: #8a847e; font-style: italic; text-align: center; }
-        @media (max-width: 768px) { .checkout-container { grid-template-columns: 1fr; } }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkout — Kyoto Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/design.css">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+.page { padding: 160px 48px 120px; max-width: 1400px; margin: 0 auto; }
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    align-items: start;
+}
+.checkout-grid h1 {
+    font-family: var(--serif);
+    font-size: clamp(44px, 5vw, 76px);
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+}
+.checkout-grid h1 em { font-style: italic; font-weight: 300; }
+.checkout-grid .lede { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-mute); margin: 0 0 40px; }
+
+/* Order summary */
+.summary {
+    border: 1px solid var(--paper-line);
+    padding: 32px;
+    margin-top: 32px;
+    background: var(--bg);
+}
+.summary-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--paper-line); }
+.summary-item {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px dotted var(--paper-line);
+    align-items: center;
+}
+.summary-item:last-of-type { border-bottom: none; }
+.summary-item img { width: 50px; height: 50px; object-fit: cover; }
+.summary-item .name { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.summary-item .qty  { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--ink-mute); text-transform: uppercase; margin-top: 2px; }
+.summary-item .price { font-family: var(--serif); font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.summary-total-row {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+}
+.summary-total-row .num { color: var(--accent); }
+.summary-tax { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); text-transform: uppercase; text-align: right; margin-top: 4px; }
+
+/* Form */
+.pay-panel {
+    background: var(--bg);
+    border: 1px solid var(--paper-line);
+    padding: 40px;
+    position: relative;
+}
+.pay-panel-label {
+    position: absolute;
+    top: -11px; left: 24px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--ink-mute);
+}
+
+.order-type-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+.order-type-btn {
+    padding: 20px 18px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--paper-line);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 300ms;
+    text-align: left;
+}
+.order-type-btn.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.order-type-btn .jp { font-family: var(--jp); font-size: 24px; line-height: 1; margin-bottom: 8px; }
+.order-type-btn .lbl { font-family: var(--serif); font-size: 18px; margin-bottom: 2px; }
+.order-type-btn .sub { font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; }
+
+.card-element-wrap {
+    padding: 16px;
+    border: 1px solid var(--paper-line);
+    background: var(--bg);
+    transition: border-color 300ms;
+}
+.card-element-wrap.focused { border-color: var(--ink); }
+#card-errors { color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; margin-top: 8px; min-height: 16px; }
+
+.test-card {
+    background: rgba(178, 58, 45, 0.06);
+    border: 1px solid rgba(178, 58, 45, 0.3);
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    margin-top: 24px;
+}
+.test-card .title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 700; }
+.test-card .row { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; font-family: var(--serif); font-size: 14px; color: var(--ink-soft); }
+.test-card .row span:first-child { color: var(--ink-mute); font-style: italic; }
+.test-card code { background: var(--bg); border: 1px solid var(--paper-line); padding: 2px 8px; font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: 700; user-select: all; }
+
+.pay-now-btn {
+    width: 100%;
+    padding: 20px;
+    margin-top: 28px;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 300ms;
+}
+.pay-now-btn:hover:not(:disabled) { background: var(--accent); }
+.pay-now-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Success */
+.success-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15, 14, 12, 0.6);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 20px;
+}
+.success-overlay.show { display: flex; }
+.success-card {
+    background: var(--bg);
+    padding: 60px 48px;
+    max-width: 480px; width: 100%;
+    text-align: center;
+    border: 1px solid var(--ink);
+    position: relative;
+}
+.success-card .kan { font-family: var(--jp); font-size: 72px; color: var(--accent); margin-bottom: 16px; line-height: 1; }
+.success-card h2 { font-family: var(--serif); font-size: 40px; font-weight: 300; margin: 0 0 16px; }
+.success-card h2 em { font-style: italic; }
+.success-card p { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-mute); line-height: 1.5; margin: 0 0 28px; }
+.success-card .btn { width: 100%; justify-content: center; text-align: center; }
+
+@media (max-width: 1000px) { .checkout-grid { grid-template-columns: 1fr; gap: 48px; } }
+@media (max-width: 600px)  { .page { padding: 120px 24px 60px; } .pay-panel { padding: 28px; } .success-card { padding: 40px 28px; } }
+</style>
 </head>
 <body>
-    <header class="topbar">
-        <div class="topbar-inner">
-            <a class="brand" href="/menuView.html"><div class="brand-icon"></div><div><div class="brand-name">Kyoto Cuisine</div><div class="brand-subtitle">Japanese Restaurant</div></div></a>
-            <a class="back-btn" href="/menuView.html">&larr; Back to Menu</a>
-        </div>
-    </header>
+<canvas id="ink-canvas"></canvas>
+<div id="root">
+    <div id="kc-nav-slot"></div>
 
-    <div class="checkout-container">
-        <div class="section-card">
-            <h2 class="section-title serif">Order Summary</h2>
-            <div id="orderItems"></div>
-            <div class="summary-divider"></div>
-            <div class="summary-line total"><span>Total (tax included)</span><span id="totalAmount">$0.00</span></div>
-            <div class="tax-note">All prices include applicable taxes</div>
-        </div>
+    <div class="page">
+        <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Checkout · お勘定</span></div>
 
-        <div class="section-card">
-            <h2 class="section-title serif">Payment Details</h2>
-            <div class="order-type-wrap">
-                <button class="order-type-btn active" onclick="setOrderType('TAKEAWAY', this)">Takeaway</button>
-                <button class="order-type-btn" onclick="setOrderType('DINE_IN', this)">Dine In</button>
+        <div class="checkout-grid">
+            <div class="reveal">
+                <h1>Seal the <em>meal.</em></h1>
+                <p class="lede">Your cart, your details, and the card. Two steps and we're composing your order.</p>
+
+                <div class="summary">
+                    <div class="summary-title">Your order</div>
+                    <div id="summaryItems"></div>
+                    <div class="summary-total-row"><span>Total</span><span class="num" id="totalAmount">€0.00</span></div>
+                    <div class="summary-tax">Tax included</div>
+                </div>
             </div>
-            <div class="field-group">
-                <label class="field-label">Order Notes (optional)</label>
-                <textarea class="notes-input" id="orderNotes" placeholder="Special instructions..."></textarea>
+
+            <div class="pay-panel reveal" data-delay="200">
+                <div class="pay-panel-label">Payment</div>
+
+                <div class="order-type-row">
+                    <button class="order-type-btn on" data-type="TAKEAWAY">
+                        <div class="jp">持</div><div class="lbl">Takeaway</div><div class="sub">pickup at counter</div>
+                    </button>
+                    <button class="order-type-btn" data-type="DINE_IN">
+                        <div class="jp">店</div><div class="lbl">Dine in</div><div class="sub">table service</div>
+                    </button>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Note for chef (optional)</label>
+                    <textarea id="orderNotes" rows="2" placeholder="allergies · occasion · special requests"></textarea>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Card details<span class="req"> *</span></label>
+                    <div class="card-element-wrap" id="cardWrap">
+                        <div id="card-element"></div>
+                    </div>
+                    <div id="card-errors" role="alert"></div>
+                </div>
+
+                <div class="test-card">
+                    <div class="title">Test card — use these details</div>
+                    <div class="row"><span>Card number</span><code>4242 4242 4242 4242</code></div>
+                    <div class="row"><span>Expiration</span><code>any future date (12/30)</code></div>
+                    <div class="row"><span>CVC</span><code>any 3 digits (123)</code></div>
+                    <div class="row"><span>Postal</span><code>any 5 digits (12345)</code></div>
+                </div>
+
+                <button class="pay-now-btn" id="payBtn" disabled>Pay now</button>
             </div>
-            <div class="field-group">
-                <label class="field-label">Card Information</label>
-                <div id="card-element"></div>
-                <div id="card-errors"></div>
-            </div>
-            <div class="test-card-note">
-                <div class="test-card-title">Test Mode - Use These Card Details</div>
-                <div class="test-card-row"><span>Card number</span><code>4242 4242 4242 4242</code></div>
-                <div class="test-card-row"><span>Expiration</span><code>Any future date (e.g. 12/30)</code></div>
-                <div class="test-card-row"><span>CVC</span><code>Any 3 digits (e.g. 123)</code></div>
-                <div class="test-card-row"><span>ZIP / Postal</span><code>Any 5 digits (e.g. 12345)</code></div>
-                <div class="test-card-footer">No real charge will be made - this is a Stripe sandbox.</div>
-            </div>
-            <button class="pay-btn" id="payBtn" disabled>Pay Now</button>
         </div>
     </div>
 
     <div class="success-overlay" id="successOverlay">
         <div class="success-card">
-            <div class="success-icon">&#10003;</div>
-            <h2 class="success-title serif">Order Confirmed!</h2>
-            <p class="success-text">Your order <strong id="successOrderId"></strong> has been placed successfully. You'll receive a confirmation email shortly.</p>
-            <button class="success-btn" onclick="window.location.href='/menuView.html'">Back to Menu</button>
+            <div class="kan">印</div>
+            <h2>Order <em>sealed.</em></h2>
+            <p>Order <strong id="successOrderId"></strong> is being composed now. A confirmation has been sent to your inbox. Chef Tanaka thanks you.</p>
+            <a href="/menuView.html" class="btn btn-ink">Back to the menu</a>
         </div>
     </div>
+</div>
 
-    <script>
-        const TAX_RATE = 0.10;
-        let orderType = 'TAKEAWAY';
-        let stripe, cardElement;
+<script src="/assets/ink.js"></script>
+<script>
+document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Menu');
 
-        function getSession() { return JSON.parse(localStorage.getItem('kyoto_session') || 'null'); }
-        function getCart() { return JSON.parse(localStorage.getItem('kyoto_cart') || '[]'); }
-        function formatPrice(v) { return '$' + v.toFixed(2); }
+const TAX_RATE = 0.10;
+let orderType = 'TAKEAWAY';
+let stripe, cardElement;
 
-        function setOrderType(type, btn) {
-            orderType = type;
-            document.querySelectorAll('.order-type-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+const session = window.kcSession.get();
+if (!session || !session.token) location.href = '/login.html?redirect=/payment.html';
 
-        // Check auth
-        const session = getSession();
-        if (!session || !session.token) { window.location.href = '/login.html'; }
+const cart = window.kcCart.get();
+if (cart.length === 0) location.href = '/menuView.html';
 
-        // Render order summary
-        const cart = getCart();
-        if (cart.length === 0) { window.location.href = '/menuView.html'; }
+const subtotal = cart.reduce((s, c) => s + c.price * c.quantity, 0);
+const total = subtotal * (1 + TAX_RATE);
 
-        const subtotal = cart.reduce((s, c) => s + c.price * c.quantity, 0);
-        const total = subtotal * (1 + TAX_RATE);
+function formatPrice(v) { return '€' + Number(v).toFixed(2); }
 
-        document.getElementById('orderItems').innerHTML = cart.map(c => `
-            <div class="order-item">
-                <img src="${c.imageUrl}" alt="${c.itemName}" />
-                <div class="order-item-info">
-                    <div class="order-item-name">${c.itemName}</div>
-                    <div class="order-item-qty">Qty: ${c.quantity}</div>
-                </div>
-                <div class="order-item-price">${formatPrice(c.price * c.quantity)}</div>
-            </div>
-        `).join('');
-        document.getElementById('totalAmount').textContent = formatPrice(total);
+// Render summary
+document.getElementById('summaryItems').innerHTML = cart.map(c => `
+    <div class="summary-item">
+        <img src="${c.imageUrl}" alt="${c.itemName}" onerror="this.style.visibility='hidden'" />
+        <div>
+            <div class="name">${c.itemName}</div>
+            <div class="qty">Qty ${c.quantity}</div>
+        </div>
+        <div class="price">${formatPrice(c.price * c.quantity)}</div>
+    </div>
+`).join('');
+document.getElementById('totalAmount').textContent = formatPrice(total);
 
-        // Initialize Stripe
-        async function initStripe() {
-            try {
-                const res = await fetch('/api/menu/config');
-                const config = await res.json();
-                stripe = Stripe(config.stripePublishableKey);
-                const elements = stripe.elements();
-                cardElement = elements.create('card', {
-                    style: { base: { fontSize: '16px', color: '#3d3734', '::placeholder': { color: '#a59d97' } } }
-                });
-                cardElement.mount('#card-element');
-                cardElement.on('change', (e) => {
-                    document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
-                    document.getElementById('payBtn').disabled = !e.complete;
-                });
-            } catch (e) { console.error('Stripe init failed', e); }
-        }
+// Order type toggle
+document.querySelectorAll('.order-type-btn').forEach(btn => btn.onclick = () => {
+    orderType = btn.dataset.type;
+    document.querySelectorAll('.order-type-btn').forEach(b => b.classList.toggle('on', b.dataset.type === orderType));
+});
 
-        // Pay
-        document.getElementById('payBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('payBtn');
-            btn.disabled = true;
-            btn.textContent = 'Processing...';
+// Stripe init
+async function initStripe() {
+    try {
+        const res = await fetch('/api/menu/config');
+        const cfg = await res.json();
+        stripe = Stripe(cfg.stripePublishableKey);
+        const elements = stripe.elements();
+        cardElement = elements.create('card', {
+            style: { base: { fontSize: '16px', color: '#0f0e0c', fontFamily: 'Cormorant Garamond, serif', '::placeholder': { color: '#8a8274' } } }
+        });
+        cardElement.mount('#card-element');
+        cardElement.on('focus',  () => document.getElementById('cardWrap').classList.add('focused'));
+        cardElement.on('blur',   () => document.getElementById('cardWrap').classList.remove('focused'));
+        cardElement.on('change', (e) => {
+            document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+            document.getElementById('payBtn').disabled = !e.complete;
+        });
+    } catch (e) {
+        document.getElementById('card-errors').textContent = 'Could not initialize payment. Please refresh.';
+    }
+}
 
-            try {
-                // 1. Create order
-                const orderRes = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
-                    body: JSON.stringify({
-                        orderType: orderType,
-                        totalAmount: total.toFixed(2),
-                        notes: document.getElementById('orderNotes').value || null,
-                        items: cart.map(c => ({
-                            menuItemId: c.menuItemId,
-                            quantity: c.quantity,
-                            unitPrice: c.price.toFixed(2),
-                            lineTotal: (c.price * c.quantity).toFixed(2)
-                        }))
-                    })
-                });
-                const orderData = await orderRes.json();
-                if (!orderRes.ok) throw new Error(orderData.error);
+document.getElementById('payBtn').onclick = async () => {
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+    try {
+        const orderRes = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
+            body: JSON.stringify({
+                orderType, totalAmount: total.toFixed(2),
+                notes: document.getElementById('orderNotes').value || null,
+                items: cart.map(c => ({
+                    menuItemId: c.menuItemId, quantity: c.quantity,
+                    unitPrice: c.price.toFixed(2), lineTotal: (c.price * c.quantity).toFixed(2)
+                }))
+            })
+        });
+        const orderData = await orderRes.json();
+        if (!orderRes.ok) throw new Error(orderData.error || 'Could not place order');
 
-                // 2. Create payment intent
-                const piRes = await fetch('/api/payments/create-intent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
-                    body: JSON.stringify({ orderId: orderData.orderId, amount: total.toFixed(2) })
-                });
-                const piData = await piRes.json();
-                if (!piRes.ok) throw new Error(piData.error);
+        const piRes = await fetch('/api/payments/create-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
+            body: JSON.stringify({ orderId: orderData.orderId, amount: total.toFixed(2) })
+        });
+        const piData = await piRes.json();
+        if (!piRes.ok) throw new Error(piData.error || 'Could not create payment');
 
-                // 3. Confirm with Stripe
-                const { error, paymentIntent } = await stripe.confirmCardPayment(piData.clientSecret, {
-                    payment_method: { card: cardElement }
-                });
-                if (error) throw new Error(error.message);
+        const { error, paymentIntent } = await stripe.confirmCardPayment(piData.clientSecret, { payment_method: { card: cardElement } });
+        if (error) throw new Error(error.message);
 
-                // 4. Record payment in backend
-                await fetch('/api/payments/confirm', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
-                    body: JSON.stringify({ orderId: orderData.orderId, transactionReference: paymentIntent.id, amount: total.toFixed(2) })
-                });
-
-                // 5. Success - clear cart and show confirmation
-                localStorage.removeItem('kyoto_cart');
-                document.getElementById('successOrderId').textContent = '#' + orderData.orderId;
-                document.getElementById('successOverlay').classList.add('show');
-
-            } catch (err) {
-                document.getElementById('card-errors').textContent = err.message;
-                btn.disabled = false;
-                btn.textContent = 'Pay Now';
-            }
+        await fetch('/api/payments/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': session.token },
+            body: JSON.stringify({ orderId: orderData.orderId, transactionReference: paymentIntent.id, amount: total.toFixed(2) })
         });
 
-        initStripe();
-    </script>
+        window.kcCart.clear();
+        document.getElementById('successOrderId').textContent = '#' + orderData.orderId;
+        document.getElementById('successOverlay').classList.add('show');
+    } catch (err) {
+        document.getElementById('card-errors').textContent = err.message;
+        btn.disabled = false;
+        btn.textContent = 'Pay now';
+    }
+};
+
+initStripe();
+</script>
 </body>
 </html>

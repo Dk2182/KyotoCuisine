@@ -1,0 +1,339 @@
+/* Kyoto Cuisine — shared design tokens, typography, paper texture, reveals */
+
+:root {
+    --bg: #f1ebe0;
+    --bg-deep: #e8e1d3;
+    --ink: #0f0e0c;
+    --ink-soft: #221f1a;
+    --ink-mute: #5a544a;
+    --ink-faint: #8a8274;
+    --paper-line: #d8cfbd;
+    --accent: #b23a2d;
+    --sakura: #e89aa8;
+    --gold: #a88c4a;
+    --serif: "Cormorant Garamond", "Shippori Mincho", Georgia, serif;
+    --jp: "Zen Old Mincho", "Noto Serif JP", serif;
+    --mono: "Space Mono", ui-monospace, "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+body {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(139, 120, 90, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(139, 120, 90, 0.05) 0%, transparent 40%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.08, 0 0 0 0 0.07, 0 0 0 0 0.05, 0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.6'/></svg>");
+}
+
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--ink); color: var(--bg); }
+
+/* Fountain-pen ink canvas */
+#ink-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: multiply;
+    width: 100vw; height: 100vh;
+}
+#root { position: relative; z-index: 1; }
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.2s cubic-bezier(.2,.7,.2,1), transform 1.2s cubic-bezier(.2,.7,.2,1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* Typography helpers */
+.serif { font-family: var(--serif); }
+.jp    { font-family: var(--jp); }
+.mono  { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); }
+.muted { color: var(--ink-mute); }
+.faint { color: var(--ink-faint); }
+
+/* Section eyebrow (e.g., "01 — Philosophy") */
+.eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.eyebrow-rule { width: 40px; height: 1px; background: var(--ink-mute); }
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 18px 32px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: transform 200ms ease, opacity 200ms ease;
+    text-decoration: none;
+}
+.btn:hover { opacity: 0.86; }
+.btn-ink { background: var(--ink); color: var(--bg); }
+.btn-ghost { border: 1px solid var(--ink); color: var(--ink); background: transparent; }
+.btn-accent { background: var(--accent); color: var(--bg); }
+.btn-small { padding: 12px 22px; font-size: 10px; }
+
+/* Shared nav (fixed top, transparent → frosted paper on scroll) */
+.kc-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 40;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: all 500ms cubic-bezier(.2,.7,.2,1);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+.kc-nav.scrolled {
+    padding: 14px 48px;
+    background: rgba(241, 235, 224, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(15, 14, 12, 0.08);
+}
+.kc-nav.solid {
+    background: var(--bg);
+    border-bottom: 1px solid var(--paper-line);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.kc-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--serif);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    font-weight: 400;
+    text-transform: none;
+    color: var(--ink);
+}
+.kc-logo-mark {
+    display: inline-block;
+    width: 36px; height: 36px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--jp);
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 36px;
+    text-align: center;
+    transform: rotate(-2deg);
+    background-image: url('/assets/logo.png');
+    background-size: cover;
+    background-position: center;
+}
+.kc-logo em { font-style: italic; color: var(--ink-mute); font-weight: 300; }
+.kc-nav-links { display: flex; gap: 40px; align-items: center; }
+.kc-nav-links a { color: var(--ink); padding: 6px 0; cursor: pointer; }
+.kc-nav-links a:hover { color: var(--accent); }
+.kc-nav-meta { display: flex; gap: 14px; align-items: center; color: var(--ink-mute); }
+.kc-nav-meta .divider { width: 1px; height: 12px; background: var(--ink-faint); }
+.kc-nav-meta .user-chip {
+    padding: 8px 14px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 200ms;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+.kc-nav-meta .user-chip:hover { background: var(--ink); color: var(--bg); }
+
+/* Cart pill */
+.kc-cart-btn {
+    position: relative;
+    padding: 8px 14px;
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: all 200ms;
+}
+.kc-cart-btn:hover { background: var(--ink); color: var(--bg); }
+.kc-cart-btn .cart-count {
+    display: inline-block;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 8px;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 999px;
+    font-size: 10px;
+    line-height: 18px;
+    padding: 0 5px;
+}
+
+/* Form inputs (ink-on-paper underline style) */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.field-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    transition: color 200ms;
+}
+.field-label .req { color: var(--accent); }
+.field input, .field textarea, .field select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--paper-line);
+    padding: 10px 0;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 300;
+    outline: none;
+    resize: none;
+    transition: border-color 200ms;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-bottom-color: var(--ink); }
+.field:focus-within .field-label { color: var(--accent); }
+
+/* Inverted fields (on dark ink panel) */
+.ink-panel .field-label { color: rgba(241, 235, 224, 0.6); }
+.ink-panel .field input, .ink-panel .field textarea {
+    color: var(--bg);
+    border-bottom-color: rgba(241, 235, 224, 0.25);
+}
+.ink-panel .field input:focus, .ink-panel .field textarea:focus { border-bottom-color: var(--bg); }
+.ink-panel .field:focus-within .field-label { color: var(--accent); }
+
+/* Error + success chips */
+.msg {
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: none;
+}
+.msg.show { display: block; }
+.msg-error { background: rgba(178, 58, 45, 0.08); color: var(--accent); border-left: 2px solid var(--accent); }
+.msg-success { background: rgba(15, 14, 12, 0.05); color: var(--ink); border-left: 2px solid var(--ink); }
+
+/* Shared panel / card */
+.panel {
+    background: var(--bg);
+    border: 1px solid var(--paper-line);
+    padding: 32px;
+    position: relative;
+}
+.panel.ink-panel {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+}
+.panel-label {
+    position: absolute;
+    top: -11px;
+    left: 24px;
+    padding: 0 12px;
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+
+/* Utility classes */
+.container { max-width: 1600px; margin: 0 auto; padding: 0 48px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* Table styling for dashboards */
+.kc-table { width: 100%; border-collapse: collapse; font-family: var(--serif); font-size: 15px; }
+.kc-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    border-bottom: 1px solid var(--ink);
+    font-weight: 400;
+}
+.kc-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--paper-line);
+    color: var(--ink-soft);
+}
+.kc-table tr:hover td { background: rgba(15, 14, 12, 0.03); }
+
+/* Status badges */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+}
+.badge.NOT_PREPARING, .badge.PENDING { color: var(--gold); }
+.badge.PREPARING { color: var(--accent); }
+.badge.READY, .badge.CONFIRMED, .badge.PAID { color: #2e7d4a; }
+.badge.COMPLETED { color: var(--ink-mute); }
+.badge.CANCELLED { color: var(--ink-faint); }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .kc-nav { padding: 14px 24px; }
+    .kc-nav-links { display: none; }
+    .container { padding: 0 24px; }
+}
+@media (max-width: 600px) {
+    .kc-nav-meta span:not(.divider) { display: none; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+}
