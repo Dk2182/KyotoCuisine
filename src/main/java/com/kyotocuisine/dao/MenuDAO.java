@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * MenuDAO - handles reads and writes for menu_items and menu_categories.
- * Uses pure JDBC: Connection, PreparedStatement, ResultSet.
- */
+// Menu items and categories.
 @Repository
 public class MenuDAO {
 

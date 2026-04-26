@@ -340,7 +340,7 @@ function renderMenu() {
     document.querySelectorAll('.add-btn').forEach(btn => btn.onclick = () => addToCart(Number(btn.dataset.add), btn));
 }
 
-// ==== Cart ====
+// Cart.
 function getCart() { return window.kcCart.get(); }
 function saveCart(c) { window.kcCart.set(c); }
 
@@ -414,7 +414,7 @@ document.getElementById('overlay').onclick = closeCart;
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
 document.getElementById('searchInput').addEventListener('input', e => { searchText = e.target.value; renderMenu(); });
 
-// Hijack any ".kc-cart-btn" in nav to open drawer instead of navigating
+// Open drawer from nav.
 document.querySelector('.kc-cart-btn')?.addEventListener('click', (e) => { e.preventDefault(); openCart(); });
 
 document.getElementById('checkoutBtn').onclick = () => {

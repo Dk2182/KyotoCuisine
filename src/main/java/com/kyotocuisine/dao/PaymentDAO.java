@@ -7,10 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-/**
- * PaymentDAO - records payments for orders.
- * Uses pure JDBC.
- */
+// Payments DAO.
 @Repository
 public class PaymentDAO {
 

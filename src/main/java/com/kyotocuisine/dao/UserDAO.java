@@ -9,16 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * UserDAO - Data Access Object for the users table.
- *
- * Uses pure JDBC: Connection, PreparedStatement, ResultSet.
- * All SQL is done through prepared statements to prevent SQL injection.
- */
+// Users DAO.
 @Repository
 public class UserDAO {
 
-    /** Helper: map a single row from the users table into a User object. */
+    // Map row to user.
     private User mapRow(ResultSet rs) throws SQLException {
         User u = new User();
         u.setUserId(rs.getInt("user_id"));

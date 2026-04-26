@@ -4,10 +4,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Wires the RateLimitFilter into the Spring Boot filter chain.
- * The filter itself is plain Java - this file just registers it.
- */
+// Registers the rate limit filter.
 @Configuration
 public class SecurityConfig {
 

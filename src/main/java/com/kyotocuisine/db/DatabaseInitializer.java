@@ -13,19 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-/**
- * DatabaseInitializer
- *
- * Runs once at application startup. Reads schema.sql and data.sql from
- * the resources folder and executes each SQL statement using raw JDBC.
- *
- * Also seeds the default Admin and Staff accounts from environment
- * variables (ADMIN_EMAIL, ADMIN_PASSWORD, STAFF_EMAIL, STAFF_PASSWORD).
- * Existing accounts are left alone - this only creates them if missing.
- *
- * Only @PostConstruct and @Component are Spring annotations, used only to
- * wire this class to run at startup. Everything else is plain Java.
- */
+// Runs schema and data on startup.
 @Component
 public class DatabaseInitializer {
 
@@ -40,7 +28,7 @@ public class DatabaseInitializer {
         System.out.println("[DatabaseInitializer] Database ready.");
     }
 
-    // ====== schema.sql / data.sql ======
+    // Run a SQL file.
 
     private void runSqlFile(String fileName) {
         String sqlText = readResource(fileName);
@@ -83,18 +71,7 @@ public class DatabaseInitializer {
         }
     }
 
-    // ====== Admin + Staff seeding from environment ======
-
-    /**
-     * Creates the default admin and staff accounts if they do not exist.
-     * Credentials are read from environment variables / system properties:
-     *   ADMIN_EMAIL, ADMIN_PASSWORD, STAFF_EMAIL, STAFF_PASSWORD.
-     *
-     * Per user requirement: "only if missing" - if an account with the same
-     * email already exists, its password is NOT overwritten. This keeps
-     * passwords rotatable through manual SQL without being clobbered on
-     * every restart.
-     */
+    // Seed admin and staff if missing.
     private void seedAdminAndStaff() {
         String adminEmail = resolveEnv("ADMIN_EMAIL");
         String adminPassword = resolveEnv("ADMIN_PASSWORD");
@@ -109,7 +86,7 @@ public class DatabaseInitializer {
 
         if (staffEmail != null && staffPassword != null) {
             int staffUserId = createUserIfMissing(staffEmail, staffPassword, /*roleId*/ 2, "Staff", "Member", "Waiter");
-            // Make sure a matching staff_profiles row exists
+            // Ensure staff_profiles row exists.
             if (staffUserId > 0) ensureStaffProfile(staffUserId, "Waiter");
         } else {
             System.out.println("[DatabaseInitializer] STAFF_EMAIL / STAFF_PASSWORD not set - skipping staff seed.");
@@ -122,14 +99,11 @@ public class DatabaseInitializer {
         return (v == null || v.isEmpty()) ? null : v;
     }
 
-    /**
-     * Creates the user row if no user with this email exists. Returns the
-     * user_id of the new OR existing row.
-     */
+    // Create user if missing.
     private int createUserIfMissing(String email, String plainPassword, int roleId,
                                     String firstName, String lastName, String staffPosition) {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Does the user already exist?
+            // Check if user exists.
             try (PreparedStatement check = conn.prepareStatement("SELECT user_id FROM users WHERE email = ?")) {
                 check.setString(1, email);
                 try (ResultSet rs = check.executeQuery()) {

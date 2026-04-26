@@ -16,7 +16,7 @@ public class UserService {
     private final UserDAO userDAO;
     private final AuditLogDAO auditLogDAO;
 
-    // Simple in-memory session store: token -> userId
+    // Session token map.
     private final ConcurrentHashMap<String, Integer> sessions = new ConcurrentHashMap<>();
 
     public UserService(UserDAO userDAO, AuditLogDAO auditLogDAO) {

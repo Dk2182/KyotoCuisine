@@ -40,7 +40,7 @@ public class PaymentService {
         }
 
         try {
-            // Stripe expects amount in cents
+            // Stripe uses cents.
             long amountInCents = amount.multiply(new BigDecimal("100")).longValue();
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()

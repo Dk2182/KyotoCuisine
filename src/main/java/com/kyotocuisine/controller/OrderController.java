@@ -55,7 +55,7 @@ public class OrderController {
 
             int orderId = orderService.createOrder(order, items);
 
-            // Send email if user is logged in
+            // Send email if logged in.
             User user = userService.getUserFromToken(token).orElse(null);
             if (user != null) {
                 emailService.sendOrderConfirmation(user.getEmail(), orderId, order.getTotalAmount().toString());

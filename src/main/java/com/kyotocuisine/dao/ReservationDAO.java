@@ -11,10 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ReservationDAO - handles reservations and table availability checks.
- * Uses pure JDBC.
- */
+// Reservations DAO.
 @Repository
 public class ReservationDAO {
 
@@ -35,10 +32,7 @@ public class ReservationDAO {
         return r;
     }
 
-    /**
-     * Returns all active, big-enough tables that are NOT already reserved
-     * during the requested time window. Uses a subquery to exclude overlapping bookings.
-     */
+    // Find available tables.
     public List<Map<String, Object>> findAvailableTables(int guestCount, LocalDateTime start, LocalDateTime end) {
         String sql =
             "SELECT rt.table_id, rt.table_label, rt.capacity " +

@@ -40,7 +40,7 @@ public class ReservationController {
 
             Map<String, Object> result = reservationService.createReservation(customerId, start, guestCount, specialRequest);
 
-            // Send email
+            // Send email.
             User user = userService.getUserFromToken(token).orElse(null);
             if (user != null) {
                 emailService.sendReservationConfirmation(

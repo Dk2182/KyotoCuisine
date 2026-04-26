@@ -8,10 +8,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * AdminDAO - statistics queries for the admin dashboard.
- * Uses pure JDBC.
- */
+// Admin stats queries.
 @Repository
 public class AdminDAO {
 
@@ -20,16 +17,16 @@ public class AdminDAO {
 
         try (Connection conn = DatabaseConnection.getConnection()) {
 
-            // 1. Orders placed today
+            // Orders today.
             stats.put("ordersToday", runIntQuery(conn,
                 "SELECT COUNT(*) FROM orders WHERE DATE(placed_at) = CURDATE()"));
 
-            // 2. Revenue collected today (from PAID payments)
+            // Revenue today.
             stats.put("revenueToday", runDecimalQuery(conn,
                 "SELECT COALESCE(SUM(amount), 0) FROM payments " +
                 "WHERE payment_status = 'PAID' AND DATE(paid_at) = CURDATE()"));
 
-            // 3. Bestselling menu item (across all orders)
+            // Bestselling item.
             String bestsellerSql =
                 "SELECT mi.item_name, SUM(oi.quantity) AS total_qty " +
                 "FROM order_items oi " +
@@ -47,13 +44,13 @@ public class AdminDAO {
                 }
             }
 
-            // 4. Active reservations (PENDING or CONFIRMED)
+            // Active reservations.
             stats.put("activeReservations", runIntQuery(conn,
                 "SELECT COUNT(*) FROM reservations r " +
                 "JOIN reservation_statuses rs ON r.reservation_status_id = rs.reservation_status_id " +
                 "WHERE rs.status_name IN ('PENDING','CONFIRMED')"));
 
-            // 5. Total registered customers
+            // Registered customers.
             stats.put("totalCustomers", runIntQuery(conn,
                 "SELECT COUNT(*) FROM users WHERE role_id = 1"));
 
@@ -64,7 +61,7 @@ public class AdminDAO {
         return stats;
     }
 
-    /** Runs a simple SQL query that returns a single integer. */
+    // Returns a single integer.
     private int runIntQuery(Connection conn, String sql) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -73,7 +70,7 @@ public class AdminDAO {
         }
     }
 
-    /** Runs a simple SQL query that returns a single decimal value. */
+    // Returns a single decimal.
     private BigDecimal runDecimalQuery(Connection conn, String sql) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {

@@ -8,10 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * AuditLogDAO - records and reads audit log entries.
- * Uses pure JDBC.
- */
+// Audit log DAO.
 @Repository
 public class AuditLogDAO {
 
@@ -47,7 +44,7 @@ public class AuditLogDAO {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            // Logging failures should never break the main flow.
+            // Never break main flow.
             System.err.println("Failed to write audit log: " + e.getMessage());
         }
     }

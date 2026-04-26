@@ -28,7 +28,7 @@
 .checkout-grid h1 em { font-style: italic; font-weight: 300; }
 .checkout-grid .lede { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-mute); margin: 0 0 40px; }
 
-/* Order summary */
+/* Summary. */
 .summary {
     border: 1px solid var(--paper-line);
     padding: 32px;
@@ -254,7 +254,7 @@ const total = subtotal * (1 + TAX_RATE);
 
 function formatPrice(v) { return '€' + Number(v).toFixed(2); }
 
-// Render summary
+// Render summary.
 document.getElementById('summaryItems').innerHTML = cart.map(c => `
     <div class="summary-item">
         <img src="${c.imageUrl}" alt="${c.itemName}" onerror="this.style.visibility='hidden'" />
@@ -267,13 +267,13 @@ document.getElementById('summaryItems').innerHTML = cart.map(c => `
 `).join('');
 document.getElementById('totalAmount').textContent = formatPrice(total);
 
-// Order type toggle
+// Order type.
 document.querySelectorAll('.order-type-btn').forEach(btn => btn.onclick = () => {
     orderType = btn.dataset.type;
     document.querySelectorAll('.order-type-btn').forEach(b => b.classList.toggle('on', b.dataset.type === orderType));
 });
 
-// Stripe init
+// Stripe.
 async function initStripe() {
     try {
         const res = await fetch('/api/menu/config');

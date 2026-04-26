@@ -61,7 +61,7 @@
     display: flex;
     flex-direction: column;
 }
-/* Inverted field styles for the dark form panel */
+/* Dark panel inputs. */
 .form-panel .field-label { color: rgba(241, 235, 224, 0.6); }
 .form-panel .field input,
 .form-panel .field textarea {
@@ -248,7 +248,7 @@
         <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations</span></div>
 
         <div class="reserve-grid">
-            <!-- Left: context + summary -->
+            <!-- Summary. -->
             <div>
                 <h1 class="reveal">Twelve seats. <em>Two services.</em></h1>
                 <p class="reveal" data-delay="150">Hold a seat at the counter, or a table on the stone terrace. We confirm within the day by message.</p>
@@ -272,7 +272,7 @@
                 <div class="form-error" id="formError"></div>
 
                 <div class="step-content">
-                    <!-- Step 0: Party + Experience -->
+                    <!-- Step 0. -->
                     <div class="step on" data-step="0">
                         <div class="fl">How many at the counter?</div>
                         <div class="party-grid" id="partyGrid"></div>
@@ -280,7 +280,7 @@
                         <div class="exp-grid" id="expGrid"></div>
                     </div>
 
-                    <!-- Step 1: Date + Time -->
+                    <!-- Step 1. -->
                     <div class="step" data-step="1">
                         <div class="fl">Choose a day</div>
                         <div class="day-grid" id="dayGrid"></div>
@@ -288,7 +288,7 @@
                         <div class="time-grid" id="timeGrid"></div>
                     </div>
 
-                    <!-- Step 2: Guest details -->
+                    <!-- Step 2. -->
                     <div class="step" data-step="2">
                         <div class="field">
                             <label class="field-label">Name<span class="req"> *</span></label>
@@ -310,7 +310,7 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Sealed -->
+                    <!-- Step 3. -->
                     <div class="step" data-step="3">
                         <div class="seal-center">
                             <div class="enso-accent">
@@ -335,13 +335,13 @@
 <script>
 document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Reserve');
 
-// ==== Require login ====
+// Require login.
 const session = window.kcSession.get();
 if (!session || !session.token) {
     location.href = '/login.html?redirect=/reservation.html';
 }
 
-// ==== State ====
+// State.
 const state = { step: 0, party: 2, experience: 'counter', date: null, time: null, name: '', email: session?.email || '', phone: '', notes: '' };
 const STEP_LABELS = ['The party', 'The moment', 'The guest', 'Sealed'];
 
@@ -396,7 +396,7 @@ document.querySelectorAll('.exp-btn').forEach(btn => btn.onclick = () => {
     renderSummary(); renderActions();
 });
 
-// Day buttons (next 14 days)
+// Day buttons.
 const days = [];
 const start = new Date(); start.setHours(0,0,0,0);
 for (let i = 0; i < 14; i++) { const d = new Date(start); d.setDate(d.getDate() + i); days.push(d); }
@@ -460,7 +460,7 @@ document.getElementById('backBtn').onclick = () => {
 document.getElementById('nextBtn').onclick = async () => {
     if (!canNext()) return;
     if (state.step === 2) {
-        // Submit to backend
+        // Submit.
         await submitReservation();
     } else {
         state.step++; renderStep();
@@ -475,7 +475,7 @@ async function submitReservation() {
     nextBtn.textContent = 'Sealing...';
 
     try {
-        // Build ISO datetime from date + time
+        // Build datetime.
         const [h, m] = state.time.split(':');
         const dt = new Date(state.date);
         dt.setHours(Number(h), Number(m), 0, 0);

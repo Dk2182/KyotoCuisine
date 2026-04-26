@@ -1,11 +1,11 @@
-/* Kyoto Cuisine — shared JS: fountain-pen ink cursor trail + scroll reveal + nav behavior */
+/* Shared scripts. */
 
 (function () {
-    // Honor reduced motion preference
+    // Reduced motion check.
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const touchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-    // ==== Scroll reveal ====
+    // Scroll reveal.
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -19,7 +19,7 @@
         document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     });
 
-    // ==== Nav scroll state ====
+    // Nav scroll state.
     const nav = () => document.querySelector('.kc-nav');
     let lastScroll = -1;
     function updateNav() {
@@ -34,8 +34,7 @@
     window.addEventListener('scroll', updateNav, { passive: true });
     document.addEventListener('DOMContentLoaded', updateNav);
 
-    // ==== Fountain-pen ink cursor trail — DISABLED ====
-    // Kept the canvas + scroll reveal code above; no mouse ink follow.
+    // Cursor trail disabled.
     return;
     // eslint-disable-next-line no-unreachable
     if (reduceMotion || touchDevice) return;
@@ -124,7 +123,7 @@
                 ctx.restore();
             }
 
-            // cap memory — never let segments grow unbounded
+            // Cap memory.
             if (segments.length > 300) segments.splice(0, segments.length - 300);
 
             requestAnimationFrame(render);
@@ -133,7 +132,7 @@
     });
 })();
 
-// ==== Session helpers (shared by all pages) ====
+// Session helpers.
 window.kcSession = {
     get() { try { return JSON.parse(localStorage.getItem('kyoto_session') || 'null'); } catch { return null; } },
     clear() { localStorage.removeItem('kyoto_session'); },
@@ -146,15 +145,7 @@ window.kcCart = {
     count() { return this.get().reduce((s, i) => s + i.quantity, 0); }
 };
 
-// ==== Nav builder — shared across pages ====
-//
-// Every page renders the EXACT same set of main links. Role-gated links
-// (Staff, Admin, Account) only appear when the user has the corresponding
-// role, but they always appear in the same position for those users.
-//
-// Story / Visit use "/#story" / "/#visit" — on the landing page these
-// smooth-scroll to the section; from other pages they navigate back to
-// the landing first and then jump to the anchor.
+// Build top nav.
 window.buildKyotoNav = function (activeLink) {
     const session = window.kcSession.get();
     const cartCount = window.kcCart.count();
@@ -174,10 +165,9 @@ window.buildKyotoNav = function (activeLink) {
     const linksHtml = links.map(([text, href]) => {
         const act = activeLink && activeLink.toLowerCase() === text.toLowerCase();
         const style = act ? 'style="color:var(--accent)"' : '';
-        // On the landing page we hijack /#story & /#visit to smooth-scroll
-        // instead of reloading. Everywhere else, let the browser navigate.
+        // Smooth-scroll on landing.
         if (onLanding && href.startsWith('/#')) {
-            const anchor = href.substring(1); // "#story"
+            const anchor = href.substring(1);
             return `<a href="${href}" onclick="event.preventDefault();document.querySelector('${anchor}')?.scrollIntoView({behavior:'smooth'})" ${style}>${text}</a>`;
         }
         return `<a href="${href}" ${style}>${text}</a>`;

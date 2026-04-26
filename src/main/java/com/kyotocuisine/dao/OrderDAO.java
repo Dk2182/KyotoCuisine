@@ -10,13 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * OrderDAO - handles orders and order_items.
- *
- * createOrder() uses a MANUAL JDBC TRANSACTION so that the order row
- * and its line items are inserted atomically. If anything fails, the
- * transaction is rolled back and nothing is saved.
- */
+// Orders and order items.
 @Repository
 public class OrderDAO {
 
@@ -51,10 +45,7 @@ public class OrderDAO {
         return oi;
     }
 
-    /**
-     * Creates an order AND its items in a single JDBC transaction.
-     * If any step fails, the whole operation is rolled back.
-     */
+    // Create order in transaction.
     public int createOrder(Order order, List<OrderItem> items) {
         String insertOrderSql =
             "INSERT INTO orders (customer_id, order_status_id, order_type, total_amount, notes) " +
@@ -71,7 +62,7 @@ public class OrderDAO {
 
             int orderId;
 
-            // 1. Insert the order header
+            // Insert order header.
             try (PreparedStatement ps = conn.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS)) {
                 if (order.getCustomerId() != null) ps.setInt(1, order.getCustomerId());
                 else ps.setNull(1, Types.INTEGER);
@@ -87,7 +78,7 @@ public class OrderDAO {
                 }
             }
 
-            // 2. Insert each order item
+            // Insert each item.
             try (PreparedStatement ps = conn.prepareStatement(insertItemSql)) {
                 for (OrderItem item : items) {
                     ps.setInt(1, orderId);
@@ -104,7 +95,7 @@ public class OrderDAO {
             return orderId;
 
         } catch (SQLException e) {
-            // On any failure, roll back so the DB stays clean.
+            // Roll back on failure.
             if (conn != null) {
                 try { conn.rollback(); } catch (SQLException ignore) {}
             }
@@ -159,7 +150,7 @@ public class OrderDAO {
         return orders;
     }
 
-    /** Helper for queries that return a list of orders without parameters. */
+    // Run a parameterless order query.
     private List<Order> runOrderQuery(String sql) {
         List<Order> orders = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();

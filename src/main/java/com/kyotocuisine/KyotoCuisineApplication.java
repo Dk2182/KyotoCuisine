@@ -11,13 +11,12 @@ import java.nio.file.Path;
 @SpringBootApplication
 public class KyotoCuisineApplication {
     public static void main(String[] args) {
-        // Load .env BEFORE Spring starts so that property placeholders
-        // like ${GMAIL_USERNAME} resolve correctly when Spring creates beans.
+        // Load .env before Spring starts.
         loadEnvFile();
         SpringApplication.run(KyotoCuisineApplication.class, args);
     }
 
-    /** Reads a local .env file and copies each KEY=VALUE pair into System properties. */
+    // Reads .env into system properties.
     private static void loadEnvFile() {
         Path envFile = Path.of(".env");
         if (!Files.exists(envFile)) return;

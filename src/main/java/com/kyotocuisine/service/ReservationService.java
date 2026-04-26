@@ -15,7 +15,7 @@ public class ReservationService {
     private final ReservationDAO reservationDAO;
     private final AuditLogDAO auditLogDAO;
 
-    // Restaurant operating hours
+    // Operating hours.
     private static final LocalTime OPEN_TIME = LocalTime.of(11, 0);
     private static final LocalTime CLOSE_TIME = LocalTime.of(22, 0);
 
@@ -25,27 +25,27 @@ public class ReservationService {
     }
 
     public Map<String, Object> createReservation(int customerId, LocalDateTime start, int guestCount, String specialRequest) {
-        // Default reservation duration: 2 hours
+        // Default 2 hour duration.
         LocalDateTime end = start.plusHours(2);
 
-        // Validate operating hours
+        // Check operating hours.
         LocalTime startTime = start.toLocalTime();
         if (startTime.isBefore(OPEN_TIME) || startTime.isAfter(CLOSE_TIME.minusHours(1))) {
             throw new RuntimeException("Reservations are only available between 11:00 AM and 9:00 PM");
         }
 
-        // Validate not in the past
+        // Reject past dates.
         if (start.isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Cannot make a reservation in the past");
         }
 
-        // Find available tables
+        // Find tables.
         List<Map<String, Object>> availableTables = reservationDAO.findAvailableTables(guestCount, start, end);
         if (availableTables.isEmpty()) {
             throw new RuntimeException("No tables available for " + guestCount + " guests at the requested time");
         }
 
-        // Auto-assign the smallest suitable table
+        // Pick smallest fitting.
         Map<String, Object> assignedTable = availableTables.get(0);
         int tableId = (int) assignedTable.get("table_id");
 

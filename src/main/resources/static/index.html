@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Shippori+Mincho:wght@400;500;700&family=Space+Mono:wght@400;700&family=Zen+Old+Mincho:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/design.css">
 <style>
-/* ================== HERO ================== */
+/* Hero. */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -113,7 +113,7 @@
     color: var(--ink-faint);
 }
 
-/* ================== STORY ================== */
+/* Story. */
 .story {
     position: relative;
     padding: 200px 48px 160px;
@@ -234,7 +234,7 @@
 .ingredient .origin { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 4px; }
 .ingredient .note   { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-faint); }
 
-/* ================== MENU SECTION ================== */
+/* Menu. */
 .menu-sec {
     position: relative;
     padding: 160px 48px;
@@ -355,7 +355,7 @@
 .omakase-price .num { font-family: var(--serif); font-size: 48px; font-weight: 300; }
 .omakase-price .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.6; margin-top: 4px; }
 
-/* Order encouragement CTA under the menu */
+/* Order CTA. */
 .order-cta-row {
     margin-top: 72px;
     display: flex;
@@ -366,7 +366,7 @@
 }
 .order-cta-row .lbl { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink-mute); max-width: 42ch; margin: 0; }
 
-/* ================== RESERVE CTA ================== */
+/* Reserve CTA. */
 .reserve-cta {
     position: relative;
     padding: 180px 48px 160px;
@@ -410,7 +410,7 @@
 .reserve-cta-right .big em { font-style: italic; }
 .reserve-cta-right .sub  { font-family: var(--serif); font-style: italic; font-size: 18px; color: rgba(241,235,224,0.7); max-width: 32ch; margin: 0; }
 
-/* ================== FOOTER ================== */
+/* Footer. */
 .visit {
     position: relative;
     background: var(--ink);
@@ -491,7 +491,7 @@
 .visit-bottom .links a:hover { color: var(--bg); }
 .visit-bottom .kanji { font-family: var(--jp); font-size: 14px; letter-spacing: 0.3em; color: var(--sakura); }
 
-/* Responsive adjustments */
+/* Responsive. */
 @media (max-width: 1100px) {
     .story-grid, .reserve-cta-grid, .menu-items { grid-template-columns: 1fr; gap: 60px; }
     .visit-grid { grid-template-columns: repeat(2, 1fr); }
@@ -520,10 +520,10 @@
 <canvas id="ink-canvas"></canvas>
 <div id="root">
 
-<!-- NAV injected by JS -->
+<!-- Nav. -->
 <div id="kc-nav-slot"></div>
 
-<!-- ================ HERO ================ -->
+<!-- Hero. -->
 <section class="hero" id="hero">
     <div class="hero-scene" id="heroScene">
         <div class="hero-layer hero-far-mtn"  data-depth="0.15">
@@ -611,7 +611,7 @@
     </div>
 </section>
 
-<!-- ================ STORY ================ -->
+<!-- Story. -->
 <section class="story" id="story">
     <div class="eyebrow reveal"><span>01</span><span class="eyebrow-rule"></span><span>Philosophy</span></div>
     <div class="story-grid">
@@ -645,7 +645,7 @@
     </div>
 </section>
 
-<!-- ================ MENU ================ -->
+<!-- Menu. -->
 <section class="menu-sec" id="menu">
     <div class="menu-sec-inner">
         <div class="eyebrow reveal"><span>02</span><span class="eyebrow-rule"></span><span>The Menu</span></div>
@@ -673,7 +673,7 @@
     </div>
 </section>
 
-<!-- ================ RESERVE CTA ================ -->
+<!-- Reserve CTA. -->
 <section class="reserve-cta" id="reserve">
     <div class="eyebrow reveal"><span>03</span><span class="eyebrow-rule"></span><span>Reservations</span></div>
     <div class="reserve-cta-grid">
@@ -691,7 +691,7 @@
     </div>
 </section>
 
-<!-- ================ FOOTER / VISIT ================ -->
+<!-- Footer. -->
 <footer class="visit" id="visit">
     <div class="visit-bg-jp">京都</div>
     <div class="visit-inner">
@@ -737,10 +737,10 @@
 </div>
 <script src="/assets/ink.js"></script>
 <script>
-// ================ NAV ================
+// Nav.
 document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Home');
 
-// ================ HERO PARALLAX ================
+// Hero parallax.
 (function () {
     let tiltX = 0, tiltY = 0, scrollY = 0;
     const scene = document.getElementById('heroScene');
@@ -768,7 +768,7 @@ document.getElementById('kc-nav-slot').innerHTML = window.buildKyotoNav('Home');
     applyTransforms();
 })();
 
-// ================ MENU TABS ================
+// Menu tabs.
 const MENU_DATA = {
     nigiri: { jp: "握り", label: "Nigiri", sub: "Edomae technique · Dalmatian provenance", items: [
         { name: "Otoro", origin: "Toyosu bluefin belly", price: 18, note: "aged 9 days" },

@@ -13,10 +13,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final String fromAddress;
 
-    // Runs email sending in a background thread so HTTP requests never wait
-    // for slow SMTP connections. If Gmail is slow or unreachable, the user
-    // gets an immediate success response and the email just fails silently
-    // in the background (logged to stderr).
+    // Background email sender.
     private final ExecutorService emailExecutor = Executors.newFixedThreadPool(2);
 
     public EmailService(JavaMailSender mailSender,
@@ -40,7 +37,7 @@ public class EmailService {
             return;
         }
 
-        // Fire and forget - runs on a background thread
+        // Run in background.
         emailExecutor.submit(() -> {
             try {
                 SimpleMailMessage message = new SimpleMailMessage();
