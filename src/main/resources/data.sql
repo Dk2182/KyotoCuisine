@@ -10,6 +10,23 @@ INSERT IGNORE INTO order_statuses (order_status_id, status_name, display_order) 
     (3, 'READY', 3),
     (4, 'COMPLETED', 4);
 
+-- Order Types
+INSERT IGNORE INTO order_types (order_type_id, type_name) VALUES
+    (1, 'TAKEAWAY'),
+    (2, 'DINE_IN');
+
+-- Payment Methods
+INSERT IGNORE INTO payment_methods (payment_method_id, method_name) VALUES
+    (1, 'CARD'),
+    (2, 'CASH');
+
+-- Payment Statuses
+INSERT IGNORE INTO payment_statuses (payment_status_id, status_name) VALUES
+    (1, 'PENDING'),
+    (2, 'PAID'),
+    (3, 'FAILED'),
+    (4, 'REFUNDED');
+
 -- Reservation Statuses
 INSERT IGNORE INTO reservation_statuses (reservation_status_id, status_name) VALUES
     (1, 'PENDING'),

@@ -107,11 +107,17 @@ CREATE TABLE IF NOT EXISTS order_statuses (
     PRIMARY KEY (order_status_id)
 );
 
+CREATE TABLE IF NOT EXISTS order_types (
+    order_type_id INT NOT NULL AUTO_INCREMENT,
+    type_name VARCHAR(30) NOT NULL UNIQUE,
+    PRIMARY KEY (order_type_id)
+);
+
 CREATE TABLE IF NOT EXISTS orders (
     order_id INT NOT NULL AUTO_INCREMENT,
     customer_id INT,
     order_status_id INT NOT NULL,
-    order_type VARCHAR(20) NOT NULL,
+    order_type_id INT NOT NULL,
     total_amount DECIMAL(10,2) NOT NULL CHECK (total_amount >= 0),
     placed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -119,7 +125,8 @@ CREATE TABLE IF NOT EXISTS orders (
     notes VARCHAR(255),
     PRIMARY KEY (order_id),
     FOREIGN KEY (customer_id) REFERENCES customer_profiles(customer_id) ON DELETE SET NULL,
-    FOREIGN KEY (order_status_id) REFERENCES order_statuses(order_status_id) ON DELETE RESTRICT
+    FOREIGN KEY (order_status_id) REFERENCES order_statuses(order_status_id) ON DELETE RESTRICT,
+    FOREIGN KEY (order_type_id) REFERENCES order_types(order_type_id) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
@@ -135,16 +142,30 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (menu_item_id) REFERENCES menu_items(menu_item_id) ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS payment_methods (
+    payment_method_id INT NOT NULL AUTO_INCREMENT,
+    method_name VARCHAR(30) NOT NULL UNIQUE,
+    PRIMARY KEY (payment_method_id)
+);
+
+CREATE TABLE IF NOT EXISTS payment_statuses (
+    payment_status_id INT NOT NULL AUTO_INCREMENT,
+    status_name VARCHAR(30) NOT NULL UNIQUE,
+    PRIMARY KEY (payment_status_id)
+);
+
 CREATE TABLE IF NOT EXISTS payments (
     payment_id INT NOT NULL AUTO_INCREMENT,
     order_id INT NOT NULL,
-    payment_method VARCHAR(20) NOT NULL,
-    payment_status VARCHAR(20) NOT NULL,
+    payment_method_id INT NOT NULL,
+    payment_status_id INT NOT NULL,
     transaction_reference VARCHAR(100),
     amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
     paid_at DATETIME,
     PRIMARY KEY (payment_id),
-    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id) ON DELETE RESTRICT,
+    FOREIGN KEY (payment_status_id) REFERENCES payment_statuses(payment_status_id) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS audit_logs (

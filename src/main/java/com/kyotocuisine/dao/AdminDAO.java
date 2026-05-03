@@ -23,8 +23,9 @@ public class AdminDAO {
 
             // Revenue today.
             stats.put("revenueToday", runDecimalQuery(conn,
-                "SELECT COALESCE(SUM(amount), 0) FROM payments " +
-                "WHERE payment_status = 'PAID' AND DATE(paid_at) = CURDATE()"));
+                "SELECT COALESCE(SUM(p.amount), 0) FROM payments p " +
+                "JOIN payment_statuses ps ON p.payment_status_id = ps.payment_status_id " +
+                "WHERE ps.status_name = 'PAID' AND DATE(p.paid_at) = CURDATE()"));
 
             // Bestselling item.
             String bestsellerSql =

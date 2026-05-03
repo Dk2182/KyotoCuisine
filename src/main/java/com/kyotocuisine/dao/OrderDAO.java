@@ -48,8 +48,8 @@ public class OrderDAO {
     // Create order in transaction.
     public int createOrder(Order order, List<OrderItem> items) {
         String insertOrderSql =
-            "INSERT INTO orders (customer_id, order_status_id, order_type, total_amount, notes) " +
-            "VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO orders (customer_id, order_status_id, order_type_id, total_amount, notes) " +
+            "VALUES (?, ?, (SELECT order_type_id FROM order_types WHERE type_name = ?), ?, ?)";
 
         String insertItemSql =
             "INSERT INTO order_items (order_id, menu_item_id, quantity, unit_price, line_total, special_instruction) " +
@@ -108,9 +108,10 @@ public class OrderDAO {
     }
 
     public List<Order> findActiveOrders() {
-        String sql = "SELECT o.*, os.status_name, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+        String sql = "SELECT o.*, os.status_name, ot.type_name AS order_type, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
                      "FROM orders o " +
                      "JOIN order_statuses os ON o.order_status_id = os.order_status_id " +
+                     "JOIN order_types ot ON o.order_type_id = ot.order_type_id " +
                      "LEFT JOIN customer_profiles cp ON o.customer_id = cp.customer_id " +
                      "LEFT JOIN users u ON cp.user_id = u.user_id " +
                      "WHERE os.status_name != 'COMPLETED' " +
@@ -119,9 +120,10 @@ public class OrderDAO {
     }
 
     public List<Order> findAllOrders() {
-        String sql = "SELECT o.*, os.status_name, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+        String sql = "SELECT o.*, os.status_name, ot.type_name AS order_type, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
                      "FROM orders o " +
                      "JOIN order_statuses os ON o.order_status_id = os.order_status_id " +
+                     "JOIN order_types ot ON o.order_type_id = ot.order_type_id " +
                      "LEFT JOIN customer_profiles cp ON o.customer_id = cp.customer_id " +
                      "LEFT JOIN users u ON cp.user_id = u.user_id " +
                      "ORDER BY o.placed_at DESC";
@@ -129,9 +131,10 @@ public class OrderDAO {
     }
 
     public List<Order> findOrdersByCustomerId(int customerId) {
-        String sql = "SELECT o.*, os.status_name, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+        String sql = "SELECT o.*, os.status_name, ot.type_name AS order_type, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
                      "FROM orders o " +
                      "JOIN order_statuses os ON o.order_status_id = os.order_status_id " +
+                     "JOIN order_types ot ON o.order_type_id = ot.order_type_id " +
                      "LEFT JOIN customer_profiles cp ON o.customer_id = cp.customer_id " +
                      "LEFT JOIN users u ON cp.user_id = u.user_id " +
                      "WHERE o.customer_id = ? ORDER BY o.placed_at DESC";
@@ -166,9 +169,10 @@ public class OrderDAO {
     }
 
     public Optional<Order> findById(int orderId) {
-        String sql = "SELECT o.*, os.status_name, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
+        String sql = "SELECT o.*, os.status_name, ot.type_name AS order_type, CONCAT(u.first_name, ' ', u.last_name) AS customer_name " +
                      "FROM orders o " +
                      "JOIN order_statuses os ON o.order_status_id = os.order_status_id " +
+                     "JOIN order_types ot ON o.order_type_id = ot.order_type_id " +
                      "LEFT JOIN customer_profiles cp ON o.customer_id = cp.customer_id " +
                      "LEFT JOIN users u ON cp.user_id = u.user_id " +
                      "WHERE o.order_id = ?";
